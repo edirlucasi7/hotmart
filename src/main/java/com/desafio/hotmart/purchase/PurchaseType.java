@@ -27,4 +27,9 @@ public enum PurchaseType {
     public boolean isRecurring() {
         return recurring;
     }
+
+    public int setNumberOfInstallments(int numberOfInstallments) {
+        if (!this.isRecurring()) return 1;
+        return numberOfInstallments;
+    }
 }

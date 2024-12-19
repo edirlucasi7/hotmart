@@ -47,7 +47,7 @@ public class Purchase {
         this.purchaseType = purchaseType;
         this.price = price;
         this.recurring = recurring;
-        this.numberOfInstallments = numberOfInstallments;
+        this.numberOfInstallments = purchaseType.setNumberOfInstallments(numberOfInstallments);
         this.product = product;
         this.state = state;
     }

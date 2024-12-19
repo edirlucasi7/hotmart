@@ -9,10 +9,16 @@ import jakarta.validation.constraints.NotNull;
 public record PurchaseRequest(@NotBlank String productCode,
                               @NotBlank String email,
                               @NotBlank String type,
-                              @NotNull @Min(value = 1) int numberOfInstallments) {
+                              int numberOfInstallments,
+                              int confirmationTime) {
 
     public Purchase toPurchase(User user, Product product) {
         PurchaseType purchaseType = PurchaseType.getByName(type);
-        return Purchase.newPurchase(user, purchaseType, product.getPrice(), purchaseType.isRecurring(), numberOfInstallments, product);
+        return Purchase.newPurchase(user, purchaseType, product.getPrice(), purchaseType.isRecurring(), setNumberOfInstallmentsFor(purchaseType), product);
+    }
+
+    private int setNumberOfInstallmentsFor(PurchaseType purchaseType) {
+        if (!purchaseType.isRecurring()) return 1;
+        return numberOfInstallments;
     }
 }
