@@ -65,7 +65,7 @@ public class PurchaseController {
     }
 
     @Transactional
-    @PutMapping("/update/pix/{code}")
+    @PutMapping("/update/pix/code/{code}")
     public ResponseEntity<?> update(@PathVariable String code, @RequestParam("confirmationTime") Integer confirmationTime) {
         Optional<PixPurchase> byCodeToPay = pixPurchaseRepository.findByCodeToPay(code);
         if (byCodeToPay.isEmpty()) return ResponseEntity.notFound().build();

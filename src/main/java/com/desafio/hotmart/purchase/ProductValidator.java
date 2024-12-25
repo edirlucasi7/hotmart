@@ -45,10 +45,9 @@ public class ProductValidator {
     }
 
     private void validatesIfTheClientAlreadyHasTheProduct(Long userId, String productCode) {
-        // TODO aqui a verificação precisa ser se já tem o produto com compra processada e válida
-        boolean customerAlreadyHasTheProduct = purchaseRepository.existsByUserIdAndProductCode(userId, productCode);
+        boolean customerAlreadyHasTheProduct = purchaseRepository.hasValidPurchaseProcessedBy(userId, productCode);
         if (customerAlreadyHasTheProduct) {
-            errors.add("The client already has the product with code: %s".formatted(productCode));
+            errors.add("The client already has the valid product with code: %s".formatted(productCode));
         }
     }
 

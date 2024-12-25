@@ -5,6 +5,7 @@ import com.desafio.hotmart.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,7 +21,12 @@ public class Purchase {
     @JoinColumn
     private User user;
 
+    @NotNull
     private final LocalDateTime createdAt = LocalDateTime.now();
+
+    // TODO por enquanto não configurável e anual
+    @NotNull
+    private final LocalDateTime expirationAt = LocalDateTime.now().plusYears(1);
 
     @Enumerated(EnumType.STRING)
     private PurchaseType purchaseType;
@@ -62,6 +68,10 @@ public class Purchase {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public LocalDateTime getExpirationAt() {
+        return expirationAt;
     }
 
     public PurchaseType getPurchaseType() {
