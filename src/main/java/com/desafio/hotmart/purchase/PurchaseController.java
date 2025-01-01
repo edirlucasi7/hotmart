@@ -80,4 +80,25 @@ public class PurchaseController {
         pixPurchase.updateConfirmationTime(confirmationTime);
         return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("confirmationTime updated")));
     }
+
+    @Transactional
+    @PostMapping("/confirm/pix/code/{code}")
+    public ResponseEntity<?> confirm(@PathVariable String code) {
+        Optional<PixPurchase> byCodeToPay = pixPurchaseRepository.findByCodeToPay(code);
+        if (byCodeToPay.isEmpty()) return ResponseEntity.notFound().build();
+
+        PixPurchase pixPurchase = byCodeToPay.get();
+        // TODO melhorar isso no refact
+        if (pixPurchase.isConfirmed() || !pixPurchase.hasValidConfirmationTime() || !pixPurchase.isAPixWaitOnBold()) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(new GenericPaymentResponse<>(new PaymentResponseDTO("purchase has already been made or has an exired code or it's not a pix on hold")));
+        }
+
+        Purchase purchase = pixPurchase.confirmPayment();
+        pixPurchaseRepository.save(pixPurchase);
+        purchaseRepository.save(purchase);
+
+        return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("purchase confirmed")));
+    }
 }

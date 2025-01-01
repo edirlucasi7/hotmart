@@ -23,11 +23,10 @@ public class Purchase {
 
     @NotNull
     private final LocalDateTime createdAt = LocalDateTime.now();
-
     // TODO por enquanto não configurável e anual
     @NotNull
     private final LocalDateTime expirationAt = LocalDateTime.now().plusYears(1);
-
+    private LocalDateTime updatedAt;
     @Enumerated(EnumType.STRING)
     private PurchaseType purchaseType;
 
@@ -74,6 +73,10 @@ public class Purchase {
         return expirationAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
     public PurchaseType getPurchaseType() {
         return purchaseType;
     }
@@ -96,5 +99,15 @@ public class Purchase {
 
     public State getState() {
         return state;
+    }
+
+    public boolean isWait() {
+        return this.state == State.WAIT;
+    }
+
+    public Purchase process() {
+        this.state = State.PROCESSED;
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 }

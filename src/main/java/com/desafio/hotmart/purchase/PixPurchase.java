@@ -3,6 +3,8 @@ package com.desafio.hotmart.purchase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class PixPurchase {
 
@@ -12,6 +14,7 @@ public class PixPurchase {
     @ManyToOne
     @JoinColumn
     private Purchase purchase;
+    // TODO ver como deixar esse codigo sempre único
     @NotBlank
     private String codeToPay;
     private int confirmationTime;
@@ -53,5 +56,18 @@ public class PixPurchase {
     public void updateConfirmationTime(int confirmationTime) {
         if (confirmed) return;
         this.confirmationTime = confirmationTime;
+    }
+
+    public boolean hasValidConfirmationTime() {
+        return LocalDateTime.now().isBefore(purchase.getCreatedAt().plusMinutes(confirmationTime));
+    }
+
+    public boolean isAPixWaitOnBold() {
+        return purchase.isWait();
+    }
+
+    public Purchase confirmPayment() {
+        this.confirmed = true;
+        return this.purchase.process();
     }
 }
