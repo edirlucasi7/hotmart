@@ -88,8 +88,7 @@ public class PurchaseController {
         if (byCodeToPay.isEmpty()) return ResponseEntity.notFound().build();
 
         PixPurchase pixPurchase = byCodeToPay.get();
-        // TODO melhorar isso no refact
-        if (pixPurchase.isConfirmed() || !pixPurchase.hasValidConfirmationTime() || !pixPurchase.isAPixWaitOnBold()) {
+        if (pixPurchase.shouldSkipConfirmation()) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body(new GenericPaymentResponse<>(new PaymentResponseDTO("purchase has already been made or has an exired code or it's not a pix on hold")));

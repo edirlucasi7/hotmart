@@ -1,8 +1,9 @@
 package com.desafio.hotmart.coupon;
 
-import com.desafio.hotmart.purchase.Purchase;
+import com.desafio.hotmart.product.Product;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,9 +15,11 @@ public class Coupon {
 
     private String code;
 
+    private BigDecimal discountValue;
+
     @ManyToOne
     @JoinColumn
-    private Purchase purchase;
+    private Product product;
 
     private final LocalDateTime createdAt = LocalDateTime.now();
 
@@ -25,17 +28,18 @@ public class Coupon {
     @Deprecated
     public Coupon() { }
 
-    public Coupon(String code, Purchase purchase, LocalDateTime expirationAt) {
+    public Coupon(String code, BigDecimal discountValue, Product product, LocalDateTime expirationAt) {
         this.code = code;
-        this.purchase = purchase;
+        this.discountValue = discountValue;
+        this.product = product;
         this.expirationAt = expirationAt;
     }
 
-    public Purchase getPurchase() {
-        return purchase;
+    public Product getProduct() {
+        return product;
     }
 
-    public Long getId() {
-        return id;
+    public BigDecimal getDiscountValue() {
+        return discountValue;
     }
 }

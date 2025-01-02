@@ -58,16 +58,22 @@ public class PixPurchase {
         this.confirmationTime = confirmationTime;
     }
 
-    public boolean hasValidConfirmationTime() {
-        return LocalDateTime.now().isBefore(purchase.getCreatedAt().plusMinutes(confirmationTime));
-    }
-
-    public boolean isAPixWaitOnBold() {
-        return purchase.isWait();
-    }
-
     public Purchase confirmPayment() {
         this.confirmed = true;
         return this.purchase.process();
+    }
+
+    public boolean shouldSkipConfirmation() {
+        return this.isConfirmed()
+                || !this.hasValidConfirmationTime()
+                || !this.isAPixWaitOnBold();
+    }
+
+    private boolean hasValidConfirmationTime() {
+        return LocalDateTime.now().isBefore(purchase.getCreatedAt().plusMinutes(confirmationTime));
+    }
+
+    private boolean isAPixWaitOnBold() {
+        return purchase.isWait();
     }
 }
