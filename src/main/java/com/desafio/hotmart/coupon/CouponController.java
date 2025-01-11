@@ -25,6 +25,8 @@ public class CouponController {
         this.couponRepository = couponRepository;
     }
 
+    // TODO entender como seria a unicidade de um cupon, quando chega um cadastro para um code que já existe, faz oq?
+    // TODO atualiza o cupom com aquele código e muda as datas? ou deixa duplicar code para o mesmo produto e cria estado de invalido e valido, deixando somente um valido por porduto? nao sei ainda!
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody CouponRequest request) {
         Optional<Product> possibleProduct = productRepository.findByCode(request.productCode());

@@ -42,4 +42,16 @@ public class Coupon {
     public BigDecimal getDiscountValue() {
         return discountValue;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getExpirationAt() {
+        return expirationAt;
+    }
 }

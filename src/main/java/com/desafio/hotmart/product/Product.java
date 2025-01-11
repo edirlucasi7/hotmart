@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity
 public class Product {
@@ -38,6 +39,10 @@ public class Product {
         this.interestPaidByCustomer = interestPaidByCustomer;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public User getUser() {
         return user;
     }
@@ -56,5 +61,11 @@ public class Product {
 
     public boolean isInterestPaidByCustomer() {
         return interestPaidByCustomer;
+    }
+
+    public BigDecimal calculatePriceWithDiscount(BigDecimal discountAmount) {
+        BigDecimal discountFactor = discountAmount.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        BigDecimal discountValue = price.multiply(discountFactor);
+        return price.subtract(discountValue);
     }
 }

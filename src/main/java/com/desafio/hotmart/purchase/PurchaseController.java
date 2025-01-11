@@ -1,5 +1,6 @@
 package com.desafio.hotmart.purchase;
 
+import com.desafio.hotmart.coupon.CouponService;
 import com.desafio.hotmart.product.Product;
 import com.desafio.hotmart.product.ProductRepository;
 import com.desafio.hotmart.purchase.errors.ProductEventResultBody;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @RestController
@@ -25,25 +27,25 @@ public class PurchaseController {
     private final PurchaseRepository purchaseRepository;
     private final ProductValidator productValidator;
     private final PixPurchaseRepository pixPurchaseRepository;
+    private final CouponService couponService;
 
-    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, ProductValidator productValidator, PixPurchaseRepository pixPurchaseRepository) {
+    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, ProductValidator productValidator, PixPurchaseRepository pixPurchaseRepository, CouponService couponService) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.purchaseRepository = purchaseRepository;
         this.productValidator = productValidator;
         this.pixPurchaseRepository = pixPurchaseRepository;
+        this.couponService = couponService;
     }
 
     @Transactional
     @PostMapping("/create")
-    public ResponseEntity<?> create(@Valid @RequestBody PurchaseRequest request) {
-        // TODO precisa ver como vai ficar o cupon de desconto
+    public ResponseEntity<?> create(@Valid @RequestBody PurchaseRequest request, @RequestParam(required = false) String coupon) {
+        Optional<Product> possibleProduct = productRepository.findByCode(request.productCode());
+        if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
         Optional<User> possibleUser = userRepository.findByEmail(request.email());
         if (possibleUser.isEmpty()) return ResponseEntity.notFound().build();
-
-        Optional<Product> possibleProduct = productRepository.findByCode(request.productCode());
-        if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
         Product product = possibleProduct.get();
         User client = possibleUser.get();
@@ -52,9 +54,19 @@ public class PurchaseController {
             return ResponseEntity.unprocessableEntity().body(body);
         }
 
-        Purchase newPurchase = request.toPurchase(client, product);
+        Optional<BigDecimal> discountAmount = couponService.tryGetDiscount(coupon, product);
+        if (couponService.exists(coupon) && discountAmount.isEmpty()) {
+            return ResponseEntity.unprocessableEntity().body(new GenericPaymentResponse<>(new PaymentResponseDTO("coupon not valid")));
+        }
+
+        Purchase newPurchase = discountAmount
+                .map(discount -> request.toPurchaseWithDiscount(client, product, discount))
+                .orElseGet(() -> request.toPurchase(client, product));
         purchaseRepository.save(newPurchase);
 
+        // TODO o confirmation time precisa ter uma regra mais clara
+        // TODO ele deveria deveria ser definido no contexto geral da aplicação? e configurável por quem? dono do produto ou dev?
+        // TODO se for dono do produto, deveria ser customizável, se for dev é para a aplicação inteira? não sei ainda!
         if (PurchaseType.PIX == PurchaseType.getByName(request.type())) {
             PixPurchase pixPurchase = pixPurchaseRepository.save(PixPurchase.create(newPurchase, request.confirmationTime(), "pixtopay"));
             PixPaymentResponseDTO pixPaymentResponseDTO = new PixPaymentResponseDTO(pixPurchase.getCodeToPay(), "Payment confirmation must be made within %s minutes".formatted(request.confirmationTime()));
