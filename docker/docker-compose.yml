@@ -3,9 +3,9 @@ services:
     container_name: 'mysql_hotmart'
     image: 'mysql:latest'
     environment:
-      - 'MYSQL_DATABASE=hotmart'
-      - 'MYSQL_PASSWORD=12345'
-      - 'MYSQL_ROOT_PASSWORD=12345'
-      - 'MYSQL_USER=admin'
+      - 'MYSQL_DATABASE=${MYSQL_DATABASE}'
+      - 'MYSQL_USER=${MYSQL_USER}'
+      - 'MYSQL_PASSWORD=${MYSQL_PASSWORD}'
+      - 'MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}'
     ports:
       - '3306:3306'
