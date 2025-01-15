@@ -1,9 +1,11 @@
 package com.desafio.hotmart.coupon;
 
-import com.desafio.hotmart.product.Product;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
@@ -16,6 +18,15 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
         WHERE co.code = :coupon
             AND po.id = :productId
             AND co.created_at <= NOW() AND co.expiration_at >= NOW()
+            AND co.status = 'ACTIVE'
     """, nativeQuery = true)
     Optional<Coupon> findCouponByCodeAndProduct(String coupon, Long productId);
+
+    // TODO rever como vai ser a expiração e se esse lock faz sentido
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Coupon> findByCodeAndStatus(String code, Status status);
+
+    default Optional<Coupon> findCouponByCodeAndActiveStatus(String code) {
+        return findByCodeAndStatus(code, Status.ACTIVE);
+    }
 }

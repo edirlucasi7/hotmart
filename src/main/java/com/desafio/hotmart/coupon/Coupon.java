@@ -25,6 +25,9 @@ public class Coupon {
 
     private LocalDateTime expirationAt;
 
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
+
     @Deprecated
     public Coupon() { }
 
@@ -53,5 +56,13 @@ public class Coupon {
 
     public LocalDateTime getExpirationAt() {
         return expirationAt;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void invalidate() {
+        this.status = Status.INACTIVE;
     }
 }
