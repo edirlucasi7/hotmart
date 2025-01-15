@@ -1,8 +1,10 @@
 package com.desafio.hotmart.purchase;
 
 import com.desafio.hotmart.coupon.CouponService;
+import com.desafio.hotmart.coupon.CouponValidator;
 import com.desafio.hotmart.product.Product;
 import com.desafio.hotmart.product.ProductRepository;
+import com.desafio.hotmart.product.ProductValidator;
 import com.desafio.hotmart.purchase.errors.ProductEventResultBody;
 import com.desafio.hotmart.purchase.response.GenericPaymentResponse;
 import com.desafio.hotmart.purchase.response.PaymentResponseDTO;
@@ -16,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -52,22 +52,20 @@ public class PurchaseController {
         Product product = possibleProduct.get();
         User client = possibleUser.get();
         if (!productValidator.isValid(request, product, client)) {
-            ProductEventResultBody body = new ProductEventResultBody(productValidator.getErrors());
-            return ResponseEntity.unprocessableEntity().body(body);
+            return ResponseEntity.unprocessableEntity().body(new ProductEventResultBody(productValidator.getErrors()));
         }
 
-        Optional<BigDecimal> discountAmount = couponService.tryGetDiscount(coupon, product);
-        if (couponService.exists(coupon) && discountAmount.isEmpty()) {
-            return ResponseEntity.unprocessableEntity().body(new GenericPaymentResponse<>(new PaymentResponseDTO("coupon not valid")));
+        Optional<BigDecimal> discount = Optional.of(BigDecimal.ZERO);
+        if (CouponValidator.isValid(coupon)) {
+            discount = couponService.tryGetDiscount(coupon, product);
+            if (discount.isEmpty()) return ResponseEntity.unprocessableEntity().body(new GenericPaymentResponse<>(new PaymentResponseDTO("coupon not valid")));
         }
 
-        Purchase newPurchase = discountAmount
-                .map(discount -> request.toPurchaseWithDiscount(client, product, discount))
-                .orElseGet(() -> request.toPurchase(client, product));
+        Purchase newPurchase = request.toPurchaseWithDiscount(client, product, discount.get());
         purchaseRepository.save(newPurchase);
 
         // TODO o confirmation time precisa ter uma regra mais clara
-        // TODO ele deveria deveria ser definido no contexto geral da aplicação? e configurável por quem? dono do produto ou dev?
+        // TODO ele deveria ser definido no contexto geral da aplicação? e configurável por quem? dono do produto ou dev?
         // TODO se for dono do produto, deveria ser customizável, se for dev é para a aplicação inteira? não sei ainda!
         if (PurchaseType.PIX == PurchaseType.getByName(request.type())) {
             PixPurchase pixPurchase = pixPurchaseRepository.save(PixPurchase.create(newPurchase, request.confirmationTime(), "pixtopay"));

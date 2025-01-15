@@ -1,6 +1,7 @@
-package com.desafio.hotmart.purchase;
+package com.desafio.hotmart.product;
 
-import com.desafio.hotmart.product.Product;
+import com.desafio.hotmart.purchase.PurchaseRepository;
+import com.desafio.hotmart.purchase.PurchaseRequest;
 import com.desafio.hotmart.user.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;

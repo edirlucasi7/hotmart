@@ -12,15 +12,6 @@ public record PurchaseRequest(@NotBlank String productCode,
                               int numberOfInstallments,
                               int confirmationTime) {
 
-    public Purchase toPurchase(User user, Product product) {
-        PurchaseType purchaseType = PurchaseType.getByName(type);
-        return Purchase.newPurchase(user,
-                purchaseType,
-                product.getPrice(),
-                purchaseType.isRecurring(),
-                setNumberOfInstallmentsFor(purchaseType), product);
-    }
-
     public Purchase toPurchaseWithDiscount(User user, Product product, BigDecimal discountAmount) {
         PurchaseType purchaseType = PurchaseType.getByName(type);
         return Purchase.newPurchase(user,

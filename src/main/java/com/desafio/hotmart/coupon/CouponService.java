@@ -18,9 +18,4 @@ public class CouponService {
     public Optional<BigDecimal> tryGetDiscount(String coupon, Product product) {
         return couponRepository.findCouponByCodeAndProduct(coupon, product.getId()).map(Coupon::getDiscountValue);
     }
-
-    public boolean exists(String coupon) {
-        if (coupon == null) return false;
-        return !coupon.isBlank();
-    }
 }
