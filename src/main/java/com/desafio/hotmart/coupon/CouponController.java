@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -29,7 +28,6 @@ public class CouponController {
         this.couponService = couponService;
     }
 
-    // TODO eu ainda preciso ver a regra de não deixar que a data de expiração seja no mínimo 24h pra frente
     @Transactional
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody CouponRequest request) {
