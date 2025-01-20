@@ -14,8 +14,8 @@ public class PixPurchase {
     @ManyToOne
     @JoinColumn
     private Purchase purchase;
-    // TODO ver como deixar esse codigo sempre único
     @NotBlank
+    @Column(unique = true)
     private String codeToPay;
     private int confirmationTime;
     private boolean confirmed;
