@@ -21,22 +21,10 @@ public class ProductValidator {
     }
 
     public boolean isValid(PurchaseRequest request, Product product, User client) {
-        validateConfirmationTime(request);
         validatesNumberOfInstallments(request.numberOfInstallments(), product.getMaximumNumberOfInstallments());
         validatesIfTheClientAlreadyHasTheProduct(client.getId(), product.getCode());
 
         return errors.isEmpty();
-    }
-
-    private void validateConfirmationTime(PurchaseRequest request) {
-        if (!"PIX".equals(request.type()) && request.confirmationTime() != 0) {
-            errors.add("Purchase via %s: cannot have confirmationTime different from 0".formatted(request.type()));
-            return;
-        }
-
-        if ("PIX".equals(request.type()) && request.confirmationTime() <= 0) {
-            errors.add("Confirmation time must be grater than zero");
-        }
     }
 
     private void validatesNumberOfInstallments(int installmentsPassedByClient, int maximumInstallmentsFromProduct) {

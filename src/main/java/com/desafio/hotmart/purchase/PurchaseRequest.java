@@ -2,6 +2,7 @@ package com.desafio.hotmart.purchase;
 
 import com.desafio.hotmart.product.Product;
 import com.desafio.hotmart.user.User;
+import com.github.f4b6a3.tsid.Tsid;
 import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
@@ -9,8 +10,7 @@ import java.math.BigDecimal;
 public record PurchaseRequest(@NotBlank String productCode,
                               @NotBlank String email,
                               @NotBlank String type,
-                              int numberOfInstallments,
-                              int confirmationTime) {
+                              int numberOfInstallments) {
 
     public Purchase toPurchaseWithDiscount(User user, Product product, BigDecimal discountAmount) {
         PurchaseType purchaseType = PurchaseType.getByName(type);
@@ -19,6 +19,11 @@ public record PurchaseRequest(@NotBlank String productCode,
                 product.calculatePriceWithDiscount(discountAmount),
                 purchaseType.isRecurring(),
                 setNumberOfInstallmentsFor(purchaseType), product);
+    }
+
+    // TODO AINDA PODE SER DUPLICADO EM ALGUM MOMENTO?! ACHO QUE SIM
+    public String generatePixCode() {
+        return Tsid.fast().toString();
     }
 
     private int setNumberOfInstallmentsFor(PurchaseType purchaseType) {

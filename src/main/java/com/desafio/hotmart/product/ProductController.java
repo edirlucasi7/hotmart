@@ -1,5 +1,6 @@
 package com.desafio.hotmart.product;
 
+import com.desafio.hotmart.purchase.response.GenericPaymentResponse;
 import com.desafio.hotmart.user.User;
 import com.desafio.hotmart.user.UserRepository;
 import jakarta.validation.Valid;

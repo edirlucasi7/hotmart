@@ -12,9 +12,10 @@ public record ProductRequest(@NotBlank String email,
                              @NotNull BigDecimal price,
                              @NotNull String code,
                              @Min(value = 1) @Max(value = 12) int maximumNumberOfInstallments,
-                             @NotNull boolean interestPaidByCustomer) {
+                             @NotNull boolean interestPaidByCustomer,
+                             @NotNull int confirmationTimeToPix) {
 
     public Product toProduct(User user) {
-        return new Product(user, price, code, maximumNumberOfInstallments, interestPaidByCustomer);
+        return new Product(user, price, code, confirmationTimeToPix, maximumNumberOfInstallments, interestPaidByCustomer);
     }
 }

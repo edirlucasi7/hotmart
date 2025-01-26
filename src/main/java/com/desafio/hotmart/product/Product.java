@@ -23,6 +23,8 @@ public class Product {
 
     private String code;
 
+    private int confirmationTime;
+
     @Min(value = 1) @Max(value = 12)
     private int maximumNumberOfInstallments;
 
@@ -31,10 +33,11 @@ public class Product {
     @Deprecated
     public Product() { }
 
-    public Product(User user, BigDecimal price, String code, int maximumNumberOfInstallments, boolean interestPaidByCustomer) {
+    public Product(User user, BigDecimal price, String code, int confirmationTime, int maximumNumberOfInstallments, boolean interestPaidByCustomer) {
         this.user = user;
         this.price = price;
         this.code = code;
+        this.confirmationTime = confirmationTime;
         this.maximumNumberOfInstallments = maximumNumberOfInstallments;
         this.interestPaidByCustomer = interestPaidByCustomer;
     }
@@ -55,6 +58,10 @@ public class Product {
         return code;
     }
 
+    public int getConfirmationTime() {
+        return confirmationTime;
+    }
+
     public int getMaximumNumberOfInstallments() {
         return maximumNumberOfInstallments;
     }
@@ -67,5 +74,9 @@ public class Product {
         BigDecimal discountFactor = discountAmount.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         BigDecimal discountValue = price.multiply(discountFactor);
         return price.subtract(discountValue);
+    }
+
+    public void updateConfirmationTime(int confirmationTime) {
+        this.confirmationTime = confirmationTime;
     }
 }

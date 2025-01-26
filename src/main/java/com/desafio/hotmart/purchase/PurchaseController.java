@@ -64,33 +64,13 @@ public class PurchaseController {
         Purchase newPurchase = request.toPurchaseWithDiscount(client, product, discount.get());
         purchaseRepository.save(newPurchase);
 
-        // TODO o confirmation time precisa ter uma regra mais clara
-        // TODO ele deveria ser definido no contexto geral da aplicação? e configurável por quem? dono do produto ou dev?
-        // TODO se for dono do produto, deveria ser customizável, se for dev é para a aplicação inteira? não sei ainda!
         if (PurchaseType.PIX == PurchaseType.getByName(request.type())) {
-            PixPurchase pixPurchase = pixPurchaseRepository.save(PixPurchase.create(newPurchase, request.confirmationTime(), "pixtopay"));
-            PixPaymentResponseDTO pixPaymentResponseDTO = new PixPaymentResponseDTO(pixPurchase.getCodeToPay(), "Payment confirmation must be made within %s minutes".formatted(request.confirmationTime()));
+            PixPurchase pixPurchase = pixPurchaseRepository.save(PixPurchase.create(newPurchase, product.getConfirmationTime(), request.generatePixCode()));
+            PixPaymentResponseDTO pixPaymentResponseDTO = new PixPaymentResponseDTO(pixPurchase.getCodeToPay(), "Payment confirmation must be made within %s minutes".formatted(product.getConfirmationTime()));
             return ResponseEntity.ok(new GenericPaymentResponse<>(pixPaymentResponseDTO));
         }
 
         return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("purchase received")));
-    }
-
-    @Transactional
-    @PutMapping("/update/pix/code/{code}")
-    public ResponseEntity<?> update(@PathVariable String code, @RequestParam("confirmationTime") Integer confirmationTime) {
-        Optional<PixPurchase> byCodeToPay = pixPurchaseRepository.findByCodeToPay(code);
-        if (byCodeToPay.isEmpty()) return ResponseEntity.notFound().build();
-
-        PixPurchase pixPurchase = byCodeToPay.get();
-        if (pixPurchase.isConfirmed()) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body(new GenericPaymentResponse<>(new PaymentResponseDTO("purchase has already been made")));
-        }
-
-        pixPurchase.updateConfirmationTime(confirmationTime);
-        return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("confirmationTime updated")));
     }
 
     @Transactional

@@ -53,11 +53,6 @@ public class PixPurchase {
         return confirmed;
     }
 
-    public void updateConfirmationTime(int confirmationTime) {
-        if (confirmed) return;
-        this.confirmationTime = confirmationTime;
-    }
-
     public Purchase confirmPayment() {
         this.confirmed = true;
         return this.purchase.process();
