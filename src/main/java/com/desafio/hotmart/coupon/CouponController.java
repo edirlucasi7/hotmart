@@ -34,10 +34,11 @@ public class CouponController {
         Optional<Product> possibleProduct = productRepository.findByCode(request.productCode());
         if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
-        Optional<Coupon> activeCoupon = couponRepository.findCouponByCodeAndActiveStatus(request.code());
+        Product product = possibleProduct.get();
+        Optional<Coupon> activeCoupon = couponRepository.findCouponByCodeAndActiveStatus(request.code(), product.getId());
         activeCoupon.ifPresent(couponService::invalidate);
 
-        Coupon coupon = request.toCoupon(possibleProduct.get());
+        Coupon coupon = request.toCoupon(product);
         couponRepository.save(coupon);
         return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("coupon created successfully")));
     }
