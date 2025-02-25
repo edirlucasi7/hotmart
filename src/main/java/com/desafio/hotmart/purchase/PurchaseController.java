@@ -51,7 +51,7 @@ public class PurchaseController {
 
         Product product = possibleProduct.get();
         User client = possibleUser.get();
-        if (!productValidator.isValid(request, product, client)) {
+        if (!productValidator.isValid(product, client)) {
             return ResponseEntity.unprocessableEntity().body(new ProductEventResultBody(productValidator.getErrors()));
         }
 
@@ -83,7 +83,7 @@ public class PurchaseController {
         if (pixPurchase.shouldSkipConfirmation()) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
-                    .body(new GenericPaymentResponse<>(new PaymentResponseDTO("purchase has already been made or has an exired code or it's not a pix on hold")));
+                    .body(new GenericPaymentResponse<>(new PaymentResponseDTO("pix purchase has expired code")));
         }
 
         Purchase purchase = pixPurchase.confirmPayment();

@@ -1,12 +1,15 @@
 package com.desafio.hotmart.product;
 
+import com.desafio.hotmart.Offer;
 import com.desafio.hotmart.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Product {
@@ -19,27 +22,25 @@ public class Product {
     @JoinColumn
     private User user;
 
-    private BigDecimal price;
-
+    @NotBlank
     private String code;
 
     private int confirmationTime;
 
-    @Min(value = 1) @Max(value = 12)
-    private int maximumNumberOfInstallments;
-
-    private boolean interestPaidByCustomer;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Offer> offers = new ArrayList<>();
 
     @Deprecated
     public Product() { }
 
-    public Product(User user, BigDecimal price, String code, int confirmationTime, int maximumNumberOfInstallments, boolean interestPaidByCustomer) {
+    public Product(User user, String code, int confirmationTime, Offer offer) {
+        Assert.notNull(user, "User must not be null!");
+        Assert.notNull(offer, "Offer must not be null!");
+        Assert.notNull(code, "Code must not be null!");
         this.user = user;
-        this.price = price;
         this.code = code;
         this.confirmationTime = confirmationTime;
-        this.maximumNumberOfInstallments = maximumNumberOfInstallments;
-        this.interestPaidByCustomer = interestPaidByCustomer;
+        this.addOffer(offer);
     }
 
     public Long getId() {
@@ -50,10 +51,6 @@ public class Product {
         return user;
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
-
     public String getCode() {
         return code;
     }
@@ -62,18 +59,30 @@ public class Product {
         return confirmationTime;
     }
 
-    public int getMaximumNumberOfInstallments() {
-        return maximumNumberOfInstallments;
+    public List<Offer> getOffers() {
+        return offers;
     }
 
-    public boolean isInterestPaidByCustomer() {
-        return interestPaidByCustomer;
+    public void addOffer(Offer offer) {
+        offers.forEach(Offer::disable);
+        offers.add(offer);
+        offer.setPost(this);
+    }
+
+    public void removeOffer(Offer offer) {
+        if (offer.isActive()) throw new IllegalArgumentException("Offer is active!");
+        offers.remove(offer);
+        offer.setPost(null);
+    }
+
+    public BigDecimal getPriceFromActiveOffer() {
+        return this.offers.stream().filter(Offer::isActive).map(Offer::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public BigDecimal calculatePriceWithDiscount(BigDecimal discountAmount) {
         BigDecimal discountFactor = discountAmount.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-        BigDecimal discountValue = price.multiply(discountFactor);
-        return price.subtract(discountValue);
+        BigDecimal discountValue = getPriceFromActiveOffer().multiply(discountFactor);
+        return getPriceFromActiveOffer().subtract(discountValue);
     }
 
     public void updateConfirmationTime(int confirmationTime) {

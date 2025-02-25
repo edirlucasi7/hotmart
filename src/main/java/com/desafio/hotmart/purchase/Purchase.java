@@ -23,13 +23,17 @@ public class Purchase {
 
     @NotNull
     private final LocalDateTime createdAt = LocalDateTime.now();
-    // TODO por enquanto não configurável e anual
+
     @NotNull
     private final LocalDateTime expirationAt = LocalDateTime.now().plusYears(1);
+
     private LocalDateTime updatedAt;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     private PurchaseType purchaseType;
 
+    @Min(0)
     private BigDecimal price;
 
     private boolean recurring;

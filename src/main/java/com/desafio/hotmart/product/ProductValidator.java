@@ -1,7 +1,6 @@
 package com.desafio.hotmart.product;
 
 import com.desafio.hotmart.purchase.PurchaseRepository;
-import com.desafio.hotmart.purchase.PurchaseRequest;
 import com.desafio.hotmart.user.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
@@ -20,17 +19,10 @@ public class ProductValidator {
         this.purchaseRepository = purchaseRepository;
     }
 
-    public boolean isValid(PurchaseRequest request, Product product, User client) {
-        validatesNumberOfInstallments(request.numberOfInstallments(), product.getMaximumNumberOfInstallments());
+    public boolean isValid(Product product, User client) {
         validatesIfTheClientAlreadyHasTheProduct(client.getId(), product.getCode());
 
         return errors.isEmpty();
-    }
-
-    private void validatesNumberOfInstallments(int installmentsPassedByClient, int maximumInstallmentsFromProduct) {
-        if (installmentsPassedByClient > maximumInstallmentsFromProduct) {
-            errors.add("Installments passed by client: %s is greater than allowed: %s".formatted(installmentsPassedByClient, maximumInstallmentsFromProduct));
-        }
     }
 
     private void validatesIfTheClientAlreadyHasTheProduct(Long userId, String productCode) {
