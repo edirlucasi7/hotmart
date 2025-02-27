@@ -62,6 +62,10 @@ public class Product {
         return code;
     }
 
+    public BigDecimal getFees() {
+        return fees;
+    }
+
     public int getConfirmationTime() {
         return confirmationTime;
     }
@@ -94,5 +98,9 @@ public class Product {
 
     public void updateConfirmationTime(int confirmationTime) {
         this.confirmationTime = confirmationTime;
+    }
+
+    public void updateFees(BigDecimal fees) {
+        this.fees = fees;
     }
 }

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+// TODO talevez usar schedule para pagar os clientes, nao sei
 @Entity
 public class Payouts {
 
