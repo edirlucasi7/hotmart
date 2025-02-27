@@ -10,19 +10,15 @@ import java.time.LocalDateTime;
 
 // TODO talevez usar schedule para pagar os clientes, nao sei
 @Entity
-public class Payouts {
+public class Payout {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    @ManyToOne
+    @OneToOne
     private Purchase purchase;
-
-    @NotNull
-    @ManyToOne
-    private User user;
 
     @NotNull
     private BigDecimal amount;
@@ -30,18 +26,20 @@ public class Payouts {
     @NotNull
     private BigDecimal platformFee;
 
+    @NotNull
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private PayoutStatus status;
 
     @Deprecated
-    public Payouts() { }
+    public Payout() { }
 
-    public Payouts(Purchase purchase, User user, BigDecimal amount, BigDecimal platformFree) {
+    public Payout(Purchase purchase, BigDecimal amount, BigDecimal platformFree) {
         this.purchase = purchase;
-        this.user = user;
         this.amount = amount;
         this.platformFee = platformFree;
         this.status = PayoutStatus.PENDING; // AQUI CRIA PENDING, DEPOIS QUE A FILA PROCESSA, MUDA STATUS
@@ -52,7 +50,7 @@ public class Payouts {
     }
 
     public User getUser() {
-        return user;
+        return purchase.getUser();
     }
 
     public BigDecimal getAmount() {
@@ -65,6 +63,10 @@ public class Payouts {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public PayoutStatus getStatus() {

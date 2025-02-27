@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Entity
@@ -65,6 +66,10 @@ public class Purchase {
         return new Purchase(user, purchaseType, price, recurring, numberOfInstallments, product, purchaseType.getState());
     }
 
+    public Long getId() {
+        return this.id;
+    }
+
     public User getUser() {
         return user;
     }
@@ -109,9 +114,19 @@ public class Purchase {
         return this.state == State.WAIT;
     }
 
+    public BigDecimal getFeeProduct() {
+        return product.getFees();
+    }
+
     public Purchase process() {
         this.state = State.PROCESSED;
         this.updatedAt = LocalDateTime.now();
         return this;
+    }
+
+    public BigDecimal calculateAmountForPayout() {
+        BigDecimal discountFactor = this.getFeeProduct().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        BigDecimal discountValue = this.price.multiply(discountFactor);
+        return this.price.subtract(discountValue);
     }
 }

@@ -1,5 +1,7 @@
 package com.desafio.hotmart.purchase;
 
+import com.desafio.hotmart.clientPayout.Payout;
+import com.desafio.hotmart.clientPayout.PayoutRepository;
 import com.desafio.hotmart.coupon.CouponService;
 import com.desafio.hotmart.coupon.CouponValidator;
 import com.desafio.hotmart.product.Product;
@@ -29,14 +31,16 @@ public class PurchaseController {
     private final PurchaseRepository purchaseRepository;
     private final ProductValidator productValidator;
     private final PixPurchaseRepository pixPurchaseRepository;
+    private final PayoutRepository payoutRepository;
     private final CouponService couponService;
 
-    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, ProductValidator productValidator, PixPurchaseRepository pixPurchaseRepository, CouponService couponService) {
+    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, ProductValidator productValidator, PixPurchaseRepository pixPurchaseRepository, PayoutRepository payoutRepository, CouponService couponService) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.purchaseRepository = purchaseRepository;
         this.productValidator = productValidator;
         this.pixPurchaseRepository = pixPurchaseRepository;
+        this.payoutRepository = payoutRepository;
         this.couponService = couponService;
     }
 
@@ -62,7 +66,9 @@ public class PurchaseController {
         }
 
         Purchase newPurchase = request.toPurchaseWithDiscount(client, product, discount.get());
+        Payout newPayout = request.toPayout(newPurchase);
         purchaseRepository.save(newPurchase);
+        payoutRepository.save(newPayout);
 
         if (PurchaseType.PIX == PurchaseType.getByName(request.type())) {
             PixPurchase pixPurchase = pixPurchaseRepository.save(PixPurchase.create(newPurchase, product.getConfirmationTime(), request.generatePixCode()));
@@ -87,6 +93,8 @@ public class PurchaseController {
         }
 
         Purchase purchase = pixPurchase.confirmPayment();
+        payoutRepository.updateStatusForConfirmedAndUpdatedAt(purchase.getId());
+
         pixPurchaseRepository.save(pixPurchase);
         purchaseRepository.save(purchase);
 
