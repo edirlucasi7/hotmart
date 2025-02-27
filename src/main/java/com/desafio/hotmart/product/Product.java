@@ -4,6 +4,7 @@ import com.desafio.hotmart.Offer;
 import com.desafio.hotmart.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
@@ -13,6 +14,8 @@ import java.util.List;
 
 @Entity
 public class Product {
+
+    private static final BigDecimal STANDARD_INTEREST_IN_PERCENTAGE = new BigDecimal("20.0");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +27,9 @@ public class Product {
 
     @NotBlank
     private String code;
+
+    @NotNull
+    private BigDecimal fees;
 
     private int confirmationTime;
 
@@ -40,6 +46,7 @@ public class Product {
         this.user = user;
         this.code = code;
         this.confirmationTime = confirmationTime;
+        this.fees = STANDARD_INTEREST_IN_PERCENTAGE;
         this.addOffer(offer);
     }
 
