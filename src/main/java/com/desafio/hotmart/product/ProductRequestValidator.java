@@ -22,6 +22,6 @@ public class ProductRequestValidator implements Validator {
     public void validate(Object target, Errors errors) {
         ProductRequest productRequest = (ProductRequest) target;
         boolean existsByCode = productRepository.existsByCode(productRequest.code());
-        if (existsByCode) errors.rejectValue("code", "Product code already exists");
+        if (existsByCode) errors.rejectValue("code", "code.already.exists", "Product code already exists");
     }
 }
