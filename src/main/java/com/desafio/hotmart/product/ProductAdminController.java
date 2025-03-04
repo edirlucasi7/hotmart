@@ -31,13 +31,13 @@ public class ProductAdminController {
     }
 
     @Transactional
-    @PutMapping("/{productId}/update/fees")
-    public ResponseEntity<?> update(@PathVariable Long productId, @RequestParam("confirmationTime") BigDecimal fees) {
+    @PutMapping("/{productId}/update/fee")
+    public ResponseEntity<?> update(@PathVariable Long productId, @RequestParam("confirmationTime") BigDecimal fee) {
         Optional<Product> possibleProduct = productRepository.findById(productId);
         if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
         Product product = possibleProduct.get();
-        product.updateFees(fees);
-        return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("fees updated")));
+        product.updateFees(fee);
+        return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("fee updated")));
     }
 }

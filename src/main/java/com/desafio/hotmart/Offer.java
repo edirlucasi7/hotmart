@@ -16,6 +16,7 @@ public class Offer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
@@ -26,6 +27,8 @@ public class Offer {
 
     private boolean smartPayment;
 
+    @NotNull
+    @Min(value = 0)
     private BigDecimal price;
 
     @NotNull

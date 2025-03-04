@@ -94,7 +94,7 @@ public class Product {
     public void removeOffer(Offer offer) {
         this.offers.remove(offer);
         offer.setPost(null);
-        if (this.offers.isEmpty()) this.disable();
+        if (!this.existsOfferActive()) this.disable();
     }
 
     public BigDecimal getPriceFromActiveOffer() {
@@ -117,5 +117,9 @@ public class Product {
 
     private void disable() {
         this.active = false;
+    }
+
+    private boolean existsOfferActive() {
+        return this.offers.stream().anyMatch(Offer::isActive);
     }
 }
