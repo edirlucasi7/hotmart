@@ -27,13 +27,12 @@ public record PurchaseRequest(@NotBlank String productCode,
         return new Payout(purchase, amountForPayout, purchase.getFeeProduct());
     }
 
-    // TODO AINDA PODE SER DUPLICADO EM ALGUM MOMENTO?! ACHO QUE SIM
     public String generatePixCode() {
         return Tsid.fast().toString();
     }
 
     private int setNumberOfInstallmentsFor(PurchaseType purchaseType) {
-        if (!purchaseType.isRecurring()) return 1;
+        if (!purchaseType.isRecurring() || numberOfInstallments == 0) return 1;
         return numberOfInstallments;
     }
 }

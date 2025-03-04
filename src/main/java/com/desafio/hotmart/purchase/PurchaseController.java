@@ -6,7 +6,6 @@ import com.desafio.hotmart.coupon.CouponService;
 import com.desafio.hotmart.coupon.CouponValidator;
 import com.desafio.hotmart.product.Product;
 import com.desafio.hotmart.product.ProductRepository;
-import com.desafio.hotmart.product.ProductValidator;
 import com.desafio.hotmart.purchase.errors.ProductEventResultBody;
 import com.desafio.hotmart.purchase.response.GenericPaymentResponse;
 import com.desafio.hotmart.purchase.response.PaymentResponseDTO;
@@ -29,16 +28,16 @@ public class PurchaseController {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final PurchaseRepository purchaseRepository;
-    private final ProductValidator productValidator;
+    private final PurchaseValidator purchaseValidator;
     private final PixPurchaseRepository pixPurchaseRepository;
     private final PayoutRepository payoutRepository;
     private final CouponService couponService;
 
-    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, ProductValidator productValidator, PixPurchaseRepository pixPurchaseRepository, PayoutRepository payoutRepository, CouponService couponService) {
+    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, PurchaseValidator purchaseValidator, PixPurchaseRepository pixPurchaseRepository, PayoutRepository payoutRepository, CouponService couponService) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.purchaseRepository = purchaseRepository;
-        this.productValidator = productValidator;
+        this.purchaseValidator = purchaseValidator;
         this.pixPurchaseRepository = pixPurchaseRepository;
         this.payoutRepository = payoutRepository;
         this.couponService = couponService;
@@ -47,7 +46,7 @@ public class PurchaseController {
     @Transactional
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody PurchaseRequest request, @RequestParam(required = false) String coupon) {
-        Optional<Product> possibleProduct = productRepository.findByCode(request.productCode());
+        Optional<Product> possibleProduct = productRepository.findByCodeAndActiveIsTrue(request.productCode());
         if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
         Optional<User> possibleUser = userRepository.findByEmail(request.email());
@@ -55,8 +54,8 @@ public class PurchaseController {
 
         Product product = possibleProduct.get();
         User client = possibleUser.get();
-        if (!productValidator.isValid(product, client)) {
-            return ResponseEntity.unprocessableEntity().body(new ProductEventResultBody(productValidator.getErrors()));
+        if (!purchaseValidator.isValid(product, client, request)) {
+            return ResponseEntity.unprocessableEntity().body(new ProductEventResultBody(purchaseValidator.getErrors()));
         }
 
         Optional<BigDecimal> discount = Optional.of(BigDecimal.ZERO);

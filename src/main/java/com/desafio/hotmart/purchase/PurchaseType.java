@@ -29,7 +29,7 @@ public enum PurchaseType {
     }
 
     public int setNumberOfInstallments(int numberOfInstallments) {
-        if (!this.isRecurring()) return 1;
+        if (!this.isRecurring() || numberOfInstallments == 0) return 1;
         return numberOfInstallments;
     }
 }

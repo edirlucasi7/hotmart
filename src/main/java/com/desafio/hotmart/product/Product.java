@@ -89,6 +89,7 @@ public class Product {
         this.offers.forEach(Offer::disable);
         this.offers.add(offer);
         offer.setPost(this);
+        this.activate();
     }
 
     public void removeOffer(Offer offer) {
@@ -99,6 +100,11 @@ public class Product {
 
     public BigDecimal getPriceFromActiveOffer() {
         return this.offers.stream().filter(Offer::isActive).map(Offer::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public int getMaximumNumberOfInstallmentsFromActiveOffer() {
+        if (!this.active) throw new IllegalStateException();
+        return this.offers.stream().filter(Offer::isActive).findFirst().map(Offer::getMaximumNumberOfInstallments).orElse(1);
     }
 
     public BigDecimal calculatePriceWithDiscount(BigDecimal discountAmount) {
@@ -116,7 +122,13 @@ public class Product {
     }
 
     private void disable() {
+        if (!this.active) return;
         this.active = false;
+    }
+
+    private void activate() {
+        if (this.active) return;
+        this.active = true;
     }
 
     private boolean existsOfferActive() {

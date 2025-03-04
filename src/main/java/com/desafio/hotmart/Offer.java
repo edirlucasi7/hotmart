@@ -61,6 +61,10 @@ public class Offer {
         return interestPayer;
     }
 
+    public int getMaximumNumberOfInstallments() {
+        return maximumNumberOfInstallments;
+    }
+
     public void setPost(Product product) {
         this.product = product;
     }

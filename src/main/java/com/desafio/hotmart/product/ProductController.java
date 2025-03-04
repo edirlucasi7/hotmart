@@ -5,7 +5,6 @@ import com.desafio.hotmart.product.offer.OfferRepository;
 import com.desafio.hotmart.user.User;
 import com.desafio.hotmart.user.UserRepository;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.WebDataBinder;
