@@ -21,15 +21,18 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @ManyToOne
     @JoinColumn
     private User user;
 
     @NotBlank
     private String code;
+    
+    private boolean active = true;
 
     @NotNull
-    private BigDecimal fees;
+    private BigDecimal fee;
 
     private int confirmationTime;
 
@@ -46,7 +49,7 @@ public class Product {
         this.user = user;
         this.code = code;
         this.confirmationTime = confirmationTime;
-        this.fees = STANDARD_INTEREST_IN_PERCENTAGE;
+        this.fee = STANDARD_INTEREST_IN_PERCENTAGE;
         this.addOffer(offer);
     }
 
@@ -58,12 +61,16 @@ public class Product {
         return user;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
     public String getCode() {
         return code;
     }
 
-    public BigDecimal getFees() {
-        return fees;
+    public BigDecimal getFee() {
+        return fee;
     }
 
     public int getConfirmationTime() {
@@ -74,16 +81,20 @@ public class Product {
         return offers;
     }
 
+    public String getUserEmail() {
+        return user.getEmail();
+    }
+
     public void addOffer(Offer offer) {
-        offers.forEach(Offer::disable);
-        offers.add(offer);
+        this.offers.forEach(Offer::disable);
+        this.offers.add(offer);
         offer.setPost(this);
     }
 
     public void removeOffer(Offer offer) {
-        if (offer.isActive()) throw new IllegalArgumentException("Offer is active!");
-        offers.remove(offer);
+        this.offers.remove(offer);
         offer.setPost(null);
+        if (this.offers.isEmpty()) this.disable();
     }
 
     public BigDecimal getPriceFromActiveOffer() {
@@ -101,6 +112,10 @@ public class Product {
     }
 
     public void updateFees(BigDecimal fees) {
-        this.fees = fees;
+        this.fee = fees;
+    }
+
+    private void disable() {
+        this.active = false;
     }
 }

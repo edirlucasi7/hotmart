@@ -38,4 +38,10 @@ public class ProductController {
         productRepository.save(product);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<ProductResponseDTO>> list() {
+        List<Product> products = productRepository.findByActiveTrue();
+        return ResponseEntity.ok(ProductResponseDTO.convert(products));
+    }
 }

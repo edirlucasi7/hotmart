@@ -42,7 +42,7 @@ public class Payout {
         this.purchase = purchase;
         this.amount = amount;
         this.platformFee = platformFree;
-        this.status = PayoutStatus.PENDING; // AQUI CRIA PENDING, DEPOIS QUE A FILA PROCESSA, MUDA STATUS
+        this.status = PayoutStatus.PENDING;
     }
 
     public Purchase getPurchase() {

@@ -115,7 +115,7 @@ public class Purchase {
     }
 
     public BigDecimal getFeeProduct() {
-        return product.getFees();
+        return product.getFee();
     }
 
     public Purchase process() {
