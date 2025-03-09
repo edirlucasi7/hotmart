@@ -39,6 +39,8 @@ public class Purchase {
 
     private boolean recurring;
 
+    private boolean smart;
+
     @Min(value = 1) @Max(value = 12)
     private int numberOfInstallments;
 
@@ -96,6 +98,10 @@ public class Purchase {
 
     public boolean isRecurring() {
         return recurring;
+    }
+
+    public boolean isSmart() {
+        return smart;
     }
 
     public int getNumberOfInstallments() {
