@@ -29,13 +29,13 @@ public class PurchaseService {
         purchaseRepository.save(newPurchase);
         payoutRepository.save(newPayout);
 
-        if (smartPayment) generatesSmartPayment(newPurchase, product.getMaximumNumberOfInstallmentsFromActiveOffer());
+        if (smartPayment) generatesSmartPayment(newPurchase);
 
         return newPurchase;
     }
 
-    private void generatesSmartPayment(Purchase purchase, int maximumNumberOfInstallmentsFromActiveOffer) {
-        List<SmartPurchase> smartPurchases = purchase.createSmartPurchase(maximumNumberOfInstallmentsFromActiveOffer);
+    private void generatesSmartPayment(Purchase purchase) {
+        List<SmartPurchase> smartPurchases = purchase.createSmartPurchase();
         smartPurchaseRepository.saveAll(smartPurchases);
     }
 }

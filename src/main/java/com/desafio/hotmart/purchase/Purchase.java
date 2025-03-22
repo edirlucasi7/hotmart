@@ -138,11 +138,11 @@ public class Purchase {
         return this.price.subtract(discountValue);
     }
 
-    public List<SmartPurchase> createSmartPurchase(int maximumNumberOfInstallmentsFromActiveOffer) {
+    public List<SmartPurchase> createSmartPurchase() {
         BigDecimal installmentPrice = this.getPrice()
-                .divide(BigDecimal.valueOf(maximumNumberOfInstallmentsFromActiveOffer), RoundingMode.HALF_UP);
+                .divide(BigDecimal.valueOf(this.product.getMaximumNumberOfInstallmentsFromActiveOffer()), RoundingMode.HALF_UP);
 
-        return IntStream.range(1, maximumNumberOfInstallmentsFromActiveOffer)
+        return IntStream.range(1, this.product.getMaximumNumberOfInstallmentsFromActiveOffer())
                 .mapToObj(installment -> new SmartPurchase(this, installment, installmentPrice))
                 .toList();
     }
