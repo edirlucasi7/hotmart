@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import static com.desafio.hotmart.purchase.State.WAIT;
+
 @Entity
 public class SmartPurchase {
 
@@ -29,17 +31,18 @@ public class SmartPurchase {
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
-    private State state;
+    private State state = WAIT;
+
+    @Min(value = 0)
+    private int retryAttempt = 0;
 
     @Deprecated
     public SmartPurchase() { }
 
-    public SmartPurchase(Purchase purchase, int installmentNumber, BigDecimal amount, LocalDateTime updatedAt, State state) {
+    public SmartPurchase(Purchase purchase, int installmentNumber, BigDecimal amount) {
         this.purchase = purchase;
         this.installmentNumber = installmentNumber;
         this.amount = amount;
-        this.updatedAt = updatedAt;
-        this.state = state;
     }
 
     public Purchase getPurchase() {
@@ -64,5 +67,9 @@ public class SmartPurchase {
 
     public State getState() {
         return state;
+    }
+
+    public int getRetryAttempt() {
+        return retryAttempt;
     }
 }

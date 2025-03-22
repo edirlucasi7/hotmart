@@ -10,6 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Entity
 public class Purchase {
@@ -134,5 +136,14 @@ public class Purchase {
         BigDecimal discountFactor = this.getFeeProduct().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         BigDecimal discountValue = this.price.multiply(discountFactor);
         return this.price.subtract(discountValue);
+    }
+
+    public List<SmartPurchase> createSmartPurchase(int maximumNumberOfInstallmentsFromActiveOffer) {
+        BigDecimal installmentPrice = this.getPrice()
+                .divide(BigDecimal.valueOf(maximumNumberOfInstallmentsFromActiveOffer), RoundingMode.HALF_UP);
+
+        return IntStream.range(1, maximumNumberOfInstallmentsFromActiveOffer)
+                .mapToObj(installment -> new SmartPurchase(this, installment, installmentPrice))
+                .toList();
     }
 }

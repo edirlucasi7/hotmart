@@ -1,6 +1,5 @@
 package com.desafio.hotmart.purchase;
 
-import com.desafio.hotmart.clientPayout.Payout;
 import com.desafio.hotmart.clientPayout.PayoutRepository;
 import com.desafio.hotmart.coupon.CouponService;
 import com.desafio.hotmart.coupon.CouponValidator;
@@ -32,8 +31,9 @@ public class PurchaseController {
     private final PixPurchaseRepository pixPurchaseRepository;
     private final PayoutRepository payoutRepository;
     private final CouponService couponService;
+    private final PurchaseService purchaseService;
 
-    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, PurchaseValidator purchaseValidator, PixPurchaseRepository pixPurchaseRepository, PayoutRepository payoutRepository, CouponService couponService) {
+    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, PurchaseValidator purchaseValidator, PixPurchaseRepository pixPurchaseRepository, PayoutRepository payoutRepository, CouponService couponService, PurchaseService purchaseService) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.purchaseRepository = purchaseRepository;
@@ -41,11 +41,13 @@ public class PurchaseController {
         this.pixPurchaseRepository = pixPurchaseRepository;
         this.payoutRepository = payoutRepository;
         this.couponService = couponService;
+        this.purchaseService = purchaseService;
     }
 
     @Transactional
     @PostMapping("/create")
-    public ResponseEntity<?> create(@Valid @RequestBody PurchaseRequest request, @RequestParam(required = false) String coupon) {
+    public ResponseEntity<?> create(@Valid @RequestBody PurchaseRequest request, @RequestParam(required = false) String coupon,
+                                    @RequestParam(required = false) boolean smartPayment) {
         Optional<Product> possibleProduct = productRepository.findByCodeAndActiveIsTrue(request.productCode());
         if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
@@ -64,10 +66,7 @@ public class PurchaseController {
             if (discount.isEmpty()) return ResponseEntity.unprocessableEntity().body(new GenericPaymentResponse<>(new PaymentResponseDTO("coupon not valid")));
         }
 
-        Purchase newPurchase = request.toPurchaseWithDiscount(client, product, discount.get());
-        Payout newPayout = request.toPayout(newPurchase);
-        purchaseRepository.save(newPurchase);
-        payoutRepository.save(newPayout);
+        Purchase newPurchase = purchaseService.save(request, client, product, discount.get(), smartPayment);
 
         if (PurchaseType.PIX == PurchaseType.getByName(request.type())) {
             PixPurchase pixPurchase = pixPurchaseRepository.save(PixPurchase.create(newPurchase, product.getConfirmationTime(), request.generatePixCode()));
