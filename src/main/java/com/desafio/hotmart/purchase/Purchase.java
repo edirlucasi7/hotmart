@@ -139,10 +139,12 @@ public class Purchase {
     }
 
     public List<SmartPurchase> createSmartPurchase() {
+        if (this.numberOfInstallments != this.product.getMaximumNumberOfInstallmentsFromActiveOffer()) throw new IllegalStateException();
+
         BigDecimal installmentPrice = this.getPrice()
                 .divide(BigDecimal.valueOf(this.product.getMaximumNumberOfInstallmentsFromActiveOffer()), RoundingMode.HALF_UP);
 
-        return IntStream.range(1, this.product.getMaximumNumberOfInstallmentsFromActiveOffer())
+        return IntStream.range(1, this.product.getMaximumNumberOfInstallmentsFromActiveOffer() + 1)
                 .mapToObj(installment -> new SmartPurchase(this, installment, installmentPrice))
                 .toList();
     }

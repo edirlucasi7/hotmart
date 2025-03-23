@@ -10,6 +10,7 @@ import java.util.List;
 
 import static com.desafio.hotmart.purchase.PurchaseType.CREDIT_CARD;
 
+// TODO da pra retornar somente um erro por vez, usar chain of responsibility com ordem parece bom
 @RequestScope
 @Component
 public class PurchaseValidator {
@@ -21,9 +22,10 @@ public class PurchaseValidator {
         this.purchaseRepository = purchaseRepository;
     }
 
-    public boolean isValid(Product product, User client, PurchaseRequest request) {
+    public boolean isValid(Product product, User client, PurchaseRequest request, boolean smartPayment) {
         validatesIfTheClientAlreadyHasTheProduct(client.getId(), product.getCode());
         validatesNumberOfInstallmentsToCreditCard(request.numberOfInstallments(), request.type(), product.getMaximumNumberOfInstallmentsFromActiveOffer());
+        validatesIfTheNumberOfInstallmentsIsEqualToTheMaximumAllowed(product, smartPayment, request.numberOfInstallments());
 
         return errors.isEmpty();
     }
@@ -35,9 +37,15 @@ public class PurchaseValidator {
         }
     }
 
+    private void validatesIfTheNumberOfInstallmentsIsEqualToTheMaximumAllowed(Product product, boolean smartPayment, int numberOfInstallments) {
+        if (smartPayment && (numberOfInstallments != product.getMaximumNumberOfInstallmentsFromActiveOffer())) {
+            errors.add("The number of installments of a smart payment must be the maximum allowed by product: %s".formatted(product.getCode()));
+        }
+    }
+
     private void validatesNumberOfInstallmentsToCreditCard(int numberOfInstallments, String type, int maximumNumberOfInstallments) {
         if (CREDIT_CARD.equals(PurchaseType.getByName(type)) && !hasValidNumberOfInstallmentsToCreditCard(numberOfInstallments, maximumNumberOfInstallments)) {
-            errors.add("The number of installments cannot be grater than that allowed by the product");
+            errors.add("The number of installments is grater than that allowed by the product");
         }
     }
 

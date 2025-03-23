@@ -56,7 +56,7 @@ public class PurchaseController {
 
         Product product = possibleProduct.get();
         User client = possibleUser.get();
-        if (!purchaseValidator.isValid(product, client, request)) {
+        if (!purchaseValidator.isValid(product, client, request, smartPayment)) {
             return ResponseEntity.unprocessableEntity().body(new ProductEventResultBody(purchaseValidator.getErrors()));
         }
 
