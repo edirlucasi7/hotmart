@@ -15,7 +15,7 @@ public class PurchaseTransaction {
 
     @ManyToOne
     @JoinColumn
-    private SmartPurchase smartPurchase;
+    private Purchase purchase;
 
     @NotBlank
     private String transactionId;
@@ -31,15 +31,15 @@ public class PurchaseTransaction {
     @Deprecated
     public PurchaseTransaction() { }
 
-    public PurchaseTransaction(SmartPurchase smartPurchase, String transactionId, State state, LocalDateTime updatedAt) {
-        this.smartPurchase = smartPurchase;
+    public PurchaseTransaction(Purchase purchase, String transactionId, State state, LocalDateTime updatedAt) {
+        this.purchase = purchase;
         this.transactionId = transactionId;
         this.state = state;
         this.updatedAt = updatedAt;
     }
 
-    public SmartPurchase getSmartPurchase() {
-        return smartPurchase;
+    public Purchase getPurchase() {
+        return purchase;
     }
 
     public String getTransactionId() {

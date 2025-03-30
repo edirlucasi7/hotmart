@@ -1,6 +1,5 @@
-package com.desafio.hotmart;
+package com.desafio.hotmart.product;
 
-import com.desafio.hotmart.product.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

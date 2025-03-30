@@ -1,6 +1,5 @@
 package com.desafio.hotmart.product;
 
-import com.desafio.hotmart.Offer;
 import com.desafio.hotmart.product.offer.OfferRepository;
 import com.desafio.hotmart.user.User;
 import com.desafio.hotmart.user.UserRepository;

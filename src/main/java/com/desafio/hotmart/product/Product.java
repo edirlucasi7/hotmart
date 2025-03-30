@@ -1,6 +1,5 @@
 package com.desafio.hotmart.product;
 
-import com.desafio.hotmart.Offer;
 import com.desafio.hotmart.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

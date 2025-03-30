@@ -1,13 +1,9 @@
 package com.desafio.hotmart.product;
 
-import com.desafio.hotmart.Offer;
 import com.desafio.hotmart.user.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import java.math.BigDecimal;
 
 public record ProductRequest(@NotBlank String email,
                              @NotNull String code,

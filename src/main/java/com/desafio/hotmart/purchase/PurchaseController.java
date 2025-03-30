@@ -5,10 +5,11 @@ import com.desafio.hotmart.coupon.CouponService;
 import com.desafio.hotmart.coupon.CouponValidator;
 import com.desafio.hotmart.product.Product;
 import com.desafio.hotmart.product.ProductRepository;
-import com.desafio.hotmart.purchase.errors.ProductEventResultBody;
 import com.desafio.hotmart.purchase.response.GenericPaymentResponse;
 import com.desafio.hotmart.purchase.response.PaymentResponseDTO;
 import com.desafio.hotmart.purchase.response.PixPaymentResponseDTO;
+import com.desafio.hotmart.purchase.validator.PurchaseHandlerValidator;
+import com.desafio.hotmart.purchase.validator.ResultErrorResponse;
 import com.desafio.hotmart.user.User;
 import com.desafio.hotmart.user.UserRepository;
 import jakarta.validation.Valid;
@@ -27,17 +28,17 @@ public class PurchaseController {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final PurchaseRepository purchaseRepository;
-    private final PurchaseValidator purchaseValidator;
+    private final PurchaseHandlerValidator purchaseHandlerValidator;
     private final PixPurchaseRepository pixPurchaseRepository;
     private final PayoutRepository payoutRepository;
     private final CouponService couponService;
     private final PurchaseService purchaseService;
 
-    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, PurchaseValidator purchaseValidator, PixPurchaseRepository pixPurchaseRepository, PayoutRepository payoutRepository, CouponService couponService, PurchaseService purchaseService) {
+    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, PurchaseHandlerValidator purchaseHandlerValidator, PixPurchaseRepository pixPurchaseRepository, PayoutRepository payoutRepository, CouponService couponService, PurchaseService purchaseService) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.purchaseRepository = purchaseRepository;
-        this.purchaseValidator = purchaseValidator;
+        this.purchaseHandlerValidator = purchaseHandlerValidator;
         this.pixPurchaseRepository = pixPurchaseRepository;
         this.payoutRepository = payoutRepository;
         this.couponService = couponService;
@@ -56,8 +57,11 @@ public class PurchaseController {
 
         Product product = possibleProduct.get();
         User client = possibleUser.get();
-        if (!purchaseValidator.isValid(product, client, request, smartPayment)) {
-            return ResponseEntity.unprocessableEntity().body(new ProductEventResultBody(purchaseValidator.getErrors()));
+
+        Optional<ResultErrorResponse> possibleErrorResponse = purchaseHandlerValidator.handler(product, client, request, smartPayment);
+        if (possibleErrorResponse.isPresent()) {
+            ResultErrorResponse resultErrorResponse = possibleErrorResponse.get();
+            return ResponseEntity.unprocessableEntity().body(new PurchaseEventResultBody(resultErrorResponse.errorMessage()));
         }
 
         Optional<BigDecimal> discount = Optional.of(BigDecimal.ZERO);

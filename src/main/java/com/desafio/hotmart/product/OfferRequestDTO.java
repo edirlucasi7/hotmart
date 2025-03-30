@@ -1,6 +1,5 @@
 package com.desafio.hotmart.product;
 
-import com.desafio.hotmart.Offer;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
