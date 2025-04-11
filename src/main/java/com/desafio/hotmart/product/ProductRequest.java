@@ -2,10 +2,11 @@ package com.desafio.hotmart.product;
 
 import com.desafio.hotmart.user.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record ProductRequest(@NotBlank String email,
+public record ProductRequest(@NotBlank @Email String email,
                              @NotNull String code,
                              @NotNull int confirmationTimeToPix,
                              @NotNull @JsonProperty("offer") OfferRequest offerRequest) {

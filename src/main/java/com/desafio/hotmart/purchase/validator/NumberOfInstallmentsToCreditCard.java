@@ -15,8 +15,8 @@ public class NumberOfInstallmentsToCreditCard implements PurchaseValidatorRules 
 
     @Override
     public boolean isValid(Product product, User client, PurchaseRequest request, boolean smartPayment) {
-        return CREDIT_CARD.equals(PurchaseType.getByName(request.type()))
-                && hasValidNumberOfInstallmentsToCreditCard(request.numberOfInstallments(), product.getMaximumNumberOfInstallmentsFromActiveOffer());
+        if (!CREDIT_CARD.equals(PurchaseType.getByName(request.type()))) return true;
+        return hasValidNumberOfInstallmentsToCreditCard(request.numberOfInstallments(), product.getMaximumNumberOfInstallmentsFromActiveOffer());
     }
 
     @Override

@@ -11,7 +11,7 @@ import com.desafio.hotmart.purchase.response.PixPaymentResponseDTO;
 import com.desafio.hotmart.purchase.validator.PurchaseHandlerValidator;
 import com.desafio.hotmart.purchase.validator.ResultErrorResponse;
 import com.desafio.hotmart.user.User;
-import com.desafio.hotmart.user.UserRepository;
+import com.desafio.hotmart.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,6 @@ import java.util.Optional;
 @RequestMapping("/purchase")
 public class PurchaseController {
 
-    private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final PurchaseRepository purchaseRepository;
     private final PurchaseHandlerValidator purchaseHandlerValidator;
@@ -33,9 +32,9 @@ public class PurchaseController {
     private final PayoutRepository payoutRepository;
     private final CouponService couponService;
     private final PurchaseService purchaseService;
+    private final UserService userService;
 
-    public PurchaseController(UserRepository userRepository, ProductRepository productRepository, PurchaseRepository purchaseRepository, PurchaseHandlerValidator purchaseHandlerValidator, PixPurchaseRepository pixPurchaseRepository, PayoutRepository payoutRepository, CouponService couponService, PurchaseService purchaseService) {
-        this.userRepository = userRepository;
+    public PurchaseController(ProductRepository productRepository, PurchaseRepository purchaseRepository, PurchaseHandlerValidator purchaseHandlerValidator, PixPurchaseRepository pixPurchaseRepository, PayoutRepository payoutRepository, CouponService couponService, PurchaseService purchaseService, UserService userService) {
         this.productRepository = productRepository;
         this.purchaseRepository = purchaseRepository;
         this.purchaseHandlerValidator = purchaseHandlerValidator;
@@ -43,6 +42,7 @@ public class PurchaseController {
         this.payoutRepository = payoutRepository;
         this.couponService = couponService;
         this.purchaseService = purchaseService;
+        this.userService = userService;
     }
 
     @Transactional
@@ -52,11 +52,8 @@ public class PurchaseController {
         Optional<Product> possibleProduct = productRepository.findByCodeAndActiveIsTrue(request.productCode());
         if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
-        Optional<User> possibleUser = userRepository.findByEmail(request.email());
-        if (possibleUser.isEmpty()) return ResponseEntity.notFound().build();
-
+        User client = userService.findBy(request.email());
         Product product = possibleProduct.get();
-        User client = possibleUser.get();
 
         Optional<ResultErrorResponse> possibleErrorResponse = purchaseHandlerValidator.handler(product, client, request, smartPayment);
         if (possibleErrorResponse.isPresent()) {

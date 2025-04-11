@@ -12,7 +12,8 @@ public class InstallmentForSmartPayment implements PurchaseValidatorRules {
 
     @Override
     public boolean isValid(Product product, User client, PurchaseRequest request, boolean smartPayment) {
-        return smartPayment && (request.numberOfInstallments() == product.getMaximumNumberOfInstallmentsFromActiveOffer());
+        if (!smartPayment) return true;
+        return (request.numberOfInstallments() == product.getMaximumNumberOfInstallmentsFromActiveOffer());
     }
 
     @Override
