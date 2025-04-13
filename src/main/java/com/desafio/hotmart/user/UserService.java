@@ -18,7 +18,7 @@ public class UserService {
 
     private User create(String email) {
         String username = email.substring(0, email.indexOf("@"));
-        Assert.hasText(username, "email is not blank");
+        Assert.hasText(username, "username is not blank");
         return userRepository.save(new User("", username, email));
     }
 }
