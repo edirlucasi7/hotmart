@@ -98,7 +98,14 @@ public class Product {
     }
 
     public BigDecimal getPriceFromActiveOffer() {
-        return this.offers.stream().filter(Offer::isActive).map(Offer::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return this.offers.stream()
+                .filter(Offer::isActive)
+                .map(Offer::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public boolean isPaidByProducer() {
+        return getActiveOffer().isPaidByProducer();
     }
 
     public int getMaximumNumberOfInstallmentsFromActiveOffer() {
@@ -128,6 +135,13 @@ public class Product {
     private void activate() {
         if (this.active) return;
         this.active = true;
+    }
+
+    private Offer getActiveOffer() {
+        return this.offers.stream()
+                .filter(Offer::isActive)
+                .findFirst()
+                .orElseThrow(IllegalStateException::new);
     }
 
     private boolean existsOfferActive() {

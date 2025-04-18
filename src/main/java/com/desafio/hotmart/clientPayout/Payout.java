@@ -77,23 +77,29 @@ public class Payout {
     }
 
     private BigDecimal calculateAmountForPayout() {
-        BigDecimal discountFactor = this.purchase.getFeeProduct().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-        BigDecimal discountValue = this.purchase.getPrice().multiply(discountFactor);
+        BigDecimal feeRate = this.purchase.getFeeProduct().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        BigDecimal feeAmount = this.purchase.getPrice().multiply(feeRate).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal amountAfterFee = this.purchase.getPrice().subtract(feeAmount);
 
-        BigDecimal amount = this.purchase.getPrice().subtract(discountValue);
-        if (this.purchase.isCardCreditPurchase()) {
-            this.status = PayoutStatus.CONFIRMED;
-            return amount.subtract(calculateInterestOnInstallments());
+        if (this.purchase.isCreditCardInterestBorneByProductOwner()) {
+            updateStatusForCreditCardPurchase();
+            BigDecimal installmentInterest = calculateInterestOnInstallments();
+            return amountAfterFee.subtract(installmentInterest).setScale(2, RoundingMode.HALF_UP);
         }
 
-        return amount;
+        return amountAfterFee.setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal calculateInterestOnInstallments() {
-        BigDecimal discountFactor = MONTHLY_DISCOUNT_ON_INSTALLMENTS
+        // TODO essa regra não está normalizada no banco, deveria? acho que sim
+        BigDecimal amountAfterFeePerMonth = MONTHLY_DISCOUNT_ON_INSTALLMENTS
                 .multiply(BigDecimal.valueOf(this.purchase.getNumberOfInstallments()))
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
 
-        return this.purchase.getPrice().multiply(discountFactor);
+        return this.purchase.getPrice().multiply(amountAfterFeePerMonth);
+    }
+
+    private void updateStatusForCreditCardPurchase() {
+        this.status = PayoutStatus.CONFIRMED;
     }
 }

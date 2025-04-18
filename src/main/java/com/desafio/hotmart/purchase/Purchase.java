@@ -56,7 +56,7 @@ public class Purchase {
     @Deprecated
     public Purchase() { }
 
-    private Purchase(User user, PurchaseType purchaseType, BigDecimal price, boolean recurring, int numberOfInstallments, Product product, State state) {
+    private Purchase(User user, PurchaseType purchaseType, BigDecimal price, boolean recurring, int numberOfInstallments, Product product, State state, boolean smartPayment) {
         this.user = user;
         this.purchaseType = purchaseType;
         this.price = price;
@@ -64,10 +64,11 @@ public class Purchase {
         this.numberOfInstallments = purchaseType.setNumberOfInstallments(numberOfInstallments);
         this.product = product;
         this.state = state;
+        this.smart = smartPayment;
     }
 
-    public static Purchase newPurchase(User user, PurchaseType purchaseType, BigDecimal price, boolean recurring, int numberOfInstallments, Product product) {
-        return new Purchase(user, purchaseType, price, recurring, numberOfInstallments, product, purchaseType.getState());
+    public static Purchase newPurchase(User user, PurchaseType purchaseType, BigDecimal price, boolean recurring, int numberOfInstallments, Product product, boolean smartPayment) {
+        return new Purchase(user, purchaseType, price, recurring, numberOfInstallments, product, purchaseType.getState(), smartPayment);
     }
 
     public Long getId() {
@@ -94,8 +95,10 @@ public class Purchase {
         return purchaseType;
     }
 
-    public boolean isCardCreditPurchase() {
-        return this.getPurchaseType().isCreditCard();
+    public boolean isCreditCardInterestBorneByProductOwner() {
+        return !this.smart
+                && this.getPurchaseType().isCreditCard()
+                && this.product.isPaidByProducer();
     }
 
     public BigDecimal getPrice() {
@@ -140,6 +143,7 @@ public class Purchase {
         return this;
     }
 
+    // TODO isso aqui poderia ta no proprio SmartPurchase
     public List<SmartPurchase> createSmartPurchase() {
         if (this.numberOfInstallments != this.product.getMaximumNumberOfInstallmentsFromActiveOffer()) throw new IllegalStateException();
 

@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import static com.desafio.hotmart.product.InterestPayer.*;
+
 @Entity
 public class Offer {
 
@@ -41,7 +43,7 @@ public class Offer {
         this.maximumNumberOfInstallments = maximumNumberOfInstallments;
         this.price = price;
         this.smartPayment = smartPayment;
-        this.interestPayer = InterestPayer.fromName(interestPayer);
+        this.interestPayer = fromName(interestPayer);
     }
 
     public Long getId() {
@@ -64,12 +66,12 @@ public class Offer {
         return maximumNumberOfInstallments;
     }
 
-    public void setPost(Product product) {
-        this.product = product;
-    }
-
     public void disable() {
         this.active = false;
+    }
+
+    void setPost(Product product) {
+        this.product = product;
     }
 
     @Override
@@ -82,5 +84,9 @@ public class Offer {
     @Override
     public int hashCode() {
         return Objects.hash(id, product, maximumNumberOfInstallments, active, smartPayment, price, interestPayer);
+    }
+
+    public boolean isPaidByProducer() {
+        return this.interestPayer == INFO_PRODUCER;
     }
 }

@@ -13,13 +13,15 @@ public record PurchaseRequest(@NotBlank String productCode,
                               @NotBlank String type,
                               int numberOfInstallments) {
 
-    public Purchase toPurchaseWithCouponDiscount(User user, Product product, BigDecimal discountAmount) {
+    public Purchase toPurchaseWithCouponDiscount(User user, Product product, BigDecimal discountAmount, boolean smartPayment) {
         PurchaseType purchaseType = PurchaseType.getByName(type);
         return Purchase.newPurchase(user,
                 purchaseType,
                 product.calculatePriceWithDiscount(discountAmount),
                 purchaseType.isRecurring(),
-                setNumberOfInstallmentsFor(purchaseType), product);
+                setNumberOfInstallmentsFor(purchaseType),
+                product,
+                smartPayment);
     }
 
     public Payout toPayout(Purchase purchase) {
