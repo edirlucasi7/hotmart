@@ -81,7 +81,10 @@ public class Payout {
         BigDecimal discountValue = this.purchase.getPrice().multiply(discountFactor);
 
         BigDecimal amount = this.purchase.getPrice().subtract(discountValue);
-        if (this.purchase.isCardCreditPurchase()) return amount.subtract(calculateInterestOnInstallments());
+        if (this.purchase.isCardCreditPurchase()) {
+            this.status = PayoutStatus.CONFIRMED;
+            return amount.subtract(calculateInterestOnInstallments());
+        }
 
         return amount;
     }
