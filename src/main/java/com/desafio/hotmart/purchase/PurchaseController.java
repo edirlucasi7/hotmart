@@ -52,7 +52,7 @@ public class PurchaseController {
         Optional<Product> possibleProduct = productRepository.findByCodeAndActiveIsTrue(request.productCode());
         if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
-        User client = userService.findBy(request.email());
+        User client = userService.getBy(request.email());
         Product product = possibleProduct.get();
 
         Optional<ResultErrorResponse> possibleErrorResponse = purchaseHandlerValidator.handler(product, client, request, smartPayment);

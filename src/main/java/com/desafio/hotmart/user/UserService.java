@@ -12,8 +12,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User findBy(String email) {
-        return userRepository.findByEmail(email).orElse(create(email));
+    public User getBy(String email) {
+        return userRepository.findByEmail(email).orElseGet(() -> create(email));
     }
 
     private User create(String email) {

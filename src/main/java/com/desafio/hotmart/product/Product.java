@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 public class Product {
 
-    private static final BigDecimal STANDARD_INTEREST_IN_PERCENTAGE = new BigDecimal("20.0");
+    private static final BigDecimal STANDARD_INTEREST_IN_PERCENTAGE = new BigDecimal("15.0");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
