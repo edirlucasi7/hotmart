@@ -23,7 +23,7 @@ public class PurchaseService {
     }
 
     public Purchase save(PurchaseRequest request, User client, Product product, BigDecimal discount, boolean smartPayment) {
-        Purchase newPurchase = request.toPurchaseWithDiscount(client, product, discount);
+        Purchase newPurchase = request.toPurchaseWithCouponDiscount(client, product, discount);
         Payout newPayout = request.toPayout(newPurchase);
 
         purchaseRepository.save(newPurchase);

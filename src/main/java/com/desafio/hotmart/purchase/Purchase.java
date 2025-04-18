@@ -94,6 +94,10 @@ public class Purchase {
         return purchaseType;
     }
 
+    public boolean isCardCreditPurchase() {
+        return this.getPurchaseType().isCreditCard();
+    }
+
     public BigDecimal getPrice() {
         return price;
     }
@@ -114,6 +118,10 @@ public class Purchase {
         return product;
     }
 
+    public User getProductOwner() {
+        return product.getUser();
+    }
+
     public State getState() {
         return state;
     }
@@ -130,12 +138,6 @@ public class Purchase {
         this.state = State.PROCESSED;
         this.updatedAt = LocalDateTime.now();
         return this;
-    }
-
-    public BigDecimal calculateAmountForPayout() {
-        BigDecimal discountFactor = this.getFeeProduct().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-        BigDecimal discountValue = this.price.multiply(discountFactor);
-        return this.price.subtract(discountValue);
     }
 
     public List<SmartPurchase> createSmartPurchase() {

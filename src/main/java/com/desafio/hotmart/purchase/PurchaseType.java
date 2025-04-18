@@ -32,4 +32,8 @@ public enum PurchaseType {
         if (!this.isRecurring() || numberOfInstallments == 0) return 1;
         return numberOfInstallments;
     }
+
+    public boolean isCreditCard() {
+        return this == CREDIT_CARD;
+    }
 }

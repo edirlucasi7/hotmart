@@ -6,11 +6,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
-// TODO talevez usar schedule para pagar os clientes, nao sei
+// TODO talvez usar schedule para pagar os infoprodutores, não sei
 @Entity
 public class Payout {
+
+    private final static BigDecimal MONTHLY_DISCOUNT_ON_INSTALLMENTS = new BigDecimal("0.5");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +41,10 @@ public class Payout {
     @Deprecated
     public Payout() { }
 
-    public Payout(Purchase purchase, BigDecimal amount, BigDecimal platformFree) {
+    public Payout(Purchase purchase) {
         this.purchase = purchase;
-        this.amount = amount;
-        this.platformFee = platformFree;
+        this.amount = calculateAmountForPayout();
+        this.platformFee = purchase.getFeeProduct();
         this.status = PayoutStatus.PENDING;
     }
 
@@ -49,8 +52,8 @@ public class Payout {
         return purchase;
     }
 
-    public User getUser() {
-        return purchase.getUser();
+    public User getProducer() {
+        return purchase.getProductOwner();
     }
 
     public BigDecimal getAmount() {
@@ -71,5 +74,23 @@ public class Payout {
 
     public PayoutStatus getStatus() {
         return status;
+    }
+
+    private BigDecimal calculateAmountForPayout() {
+        BigDecimal discountFactor = this.purchase.getFeeProduct().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        BigDecimal discountValue = this.purchase.getPrice().multiply(discountFactor);
+
+        BigDecimal amount = this.purchase.getPrice().subtract(discountValue);
+        if (this.purchase.isCardCreditPurchase()) return amount.subtract(calculateInterestOnInstallments());
+
+        return amount;
+    }
+
+    private BigDecimal calculateInterestOnInstallments() {
+        BigDecimal discountFactor = MONTHLY_DISCOUNT_ON_INSTALLMENTS
+                .multiply(BigDecimal.valueOf(this.purchase.getNumberOfInstallments()))
+                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+
+        return this.purchase.getPrice().multiply(discountFactor);
     }
 }

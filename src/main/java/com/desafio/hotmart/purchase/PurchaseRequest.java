@@ -13,7 +13,7 @@ public record PurchaseRequest(@NotBlank String productCode,
                               @NotBlank String type,
                               int numberOfInstallments) {
 
-    public Purchase toPurchaseWithDiscount(User user, Product product, BigDecimal discountAmount) {
+    public Purchase toPurchaseWithCouponDiscount(User user, Product product, BigDecimal discountAmount) {
         PurchaseType purchaseType = PurchaseType.getByName(type);
         return Purchase.newPurchase(user,
                 purchaseType,
@@ -23,8 +23,7 @@ public record PurchaseRequest(@NotBlank String productCode,
     }
 
     public Payout toPayout(Purchase purchase) {
-        BigDecimal amountForPayout = purchase.calculateAmountForPayout();
-        return new Payout(purchase, amountForPayout, purchase.getFeeProduct());
+        return new Payout(purchase);
     }
 
     public String generatePixCode() {
