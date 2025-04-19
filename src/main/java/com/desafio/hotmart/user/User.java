@@ -1,11 +1,7 @@
 package com.desafio.hotmart.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class User {
@@ -14,21 +10,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Embedded
+    @NotNull
+    private ProfileVO profile;
 
-    @NotBlank
-    private String username;
-
-    @Email
-    @NotBlank
-    private String email;
+    @Embedded
+    @NotNull
+    private EmailVO email;
 
     @Deprecated
     public User() { }
 
-    public User(String name, String username, String email) {
-        this.name = name;
-        this.username = username;
+    public User(ProfileVO profile, EmailVO email) {
+        this.profile = profile;
         this.email = email;
     }
 
@@ -37,14 +31,14 @@ public class User {
     }
 
     public String getName() {
-        return name;
+        return profile.getName();
     }
 
     public String getUsername() {
-        return username;
+        return profile.getUsername();
     }
 
     public String getEmail() {
-        return email;
+        return email.getEmail();
     }
 }
