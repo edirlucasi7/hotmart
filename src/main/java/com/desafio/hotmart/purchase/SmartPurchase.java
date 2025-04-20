@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.desafio.hotmart.purchase.State.WAIT;
 
@@ -39,10 +41,16 @@ public class SmartPurchase {
     @Deprecated
     public SmartPurchase() { }
 
-    public SmartPurchase(Purchase purchase, int installmentNumber, BigDecimal amount) {
+    private SmartPurchase(Purchase purchase, int installmentNumber, BigDecimal amount) {
         this.purchase = purchase;
         this.installmentNumber = installmentNumber;
         this.amount = amount;
+    }
+
+    public static List<SmartPurchase> createSmartPurchase(Purchase purchase, int maximumNumberOfInstallments, BigDecimal installmentPrice) {
+        return IntStream.range(1, maximumNumberOfInstallments + 1)
+                .mapToObj(installment -> new SmartPurchase(purchase, installment, installmentPrice))
+                .toList();
     }
 
     public Purchase getPurchase() {

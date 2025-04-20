@@ -35,7 +35,7 @@ public class ProductController {
 
     @PostMapping("/create")
     public ResponseEntity<Product> create(@Valid @RequestBody ProductRequest request) {
-        Optional<User> user = userRepository.findByEmail(request.email());
+        Optional<User> user = userRepository.findByEmail_Email(request.email());
         if (user.isEmpty()) return ResponseEntity.notFound().build();
 
         Product product = request.toProduct(user.get());

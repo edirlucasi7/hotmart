@@ -13,7 +13,7 @@ public class UserService {
     }
 
     public User getBy(String email) {
-        return userRepository.findByEmail(email).orElseGet(() -> create(email));
+        return userRepository.findByEmail_Email(email).orElseGet(() -> create(email));
     }
 
     private User create(String email) {

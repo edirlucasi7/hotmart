@@ -29,12 +29,14 @@ public class PurchaseService {
         purchaseRepository.save(newPurchase);
         payoutRepository.save(newPayout);
 
-        if (smartPayment) generatesSmartPayment(newPurchase);
+        if (smartPayment) generateSmartPayment(newPurchase);
 
         return newPurchase;
     }
 
-    private void generatesSmartPayment(Purchase purchase) {
+    private void generateSmartPayment(Purchase purchase) {
+        if (purchase.hasValidInstallment()) throw new IllegalStateException();
+
         List<SmartPurchase> smartPurchases = purchase.createSmartPurchase();
         smartPurchaseRepository.saveAll(smartPurchases);
     }

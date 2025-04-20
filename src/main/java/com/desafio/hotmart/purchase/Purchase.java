@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Entity
 public class Purchase {
@@ -67,8 +66,29 @@ public class Purchase {
         this.smart = smartPayment;
     }
 
-    public static Purchase newPurchase(User user, PurchaseType purchaseType, BigDecimal price, boolean recurring, int numberOfInstallments, Product product, boolean smartPayment) {
+    static Purchase newPurchase(User user, PurchaseType purchaseType, BigDecimal price, boolean recurring, int numberOfInstallments, Product product, boolean smartPayment) {
         return new Purchase(user, purchaseType, price, recurring, numberOfInstallments, product, purchaseType.getState(), smartPayment);
+    }
+
+    Purchase process() {
+        this.state = State.PROCESSED;
+        this.updatedAt = LocalDateTime.now();
+        return this;
+    }
+
+    List<SmartPurchase> createSmartPurchase() {
+        int maximumNumberOfInstallments = this.getMaximumNumberOfInstallmentsFromActiveOffer();
+        BigDecimal installmentPrice = this.getPrice().divide(BigDecimal.valueOf(maximumNumberOfInstallments), 2, RoundingMode.HALF_UP);
+
+        return SmartPurchase.createSmartPurchase(this, maximumNumberOfInstallments, installmentPrice);
+    }
+
+    boolean hasValidInstallment() {
+        return this.numberOfInstallments != getMaximumNumberOfInstallmentsFromActiveOffer();
+    }
+
+    int getMaximumNumberOfInstallmentsFromActiveOffer() {
+        return this.product.getMaximumNumberOfInstallmentsFromActiveOffer();
     }
 
     public Long getId() {
@@ -135,23 +155,5 @@ public class Purchase {
 
     public BigDecimal getFeeProduct() {
         return product.getFee();
-    }
-
-    public Purchase process() {
-        this.state = State.PROCESSED;
-        this.updatedAt = LocalDateTime.now();
-        return this;
-    }
-
-    // TODO isso aqui poderia ta no proprio SmartPurchase
-    public List<SmartPurchase> createSmartPurchase() {
-        if (this.numberOfInstallments != this.product.getMaximumNumberOfInstallmentsFromActiveOffer()) throw new IllegalStateException();
-
-        BigDecimal installmentPrice = this.getPrice()
-                .divide(BigDecimal.valueOf(this.product.getMaximumNumberOfInstallmentsFromActiveOffer()), RoundingMode.HALF_UP);
-
-        return IntStream.range(1, this.product.getMaximumNumberOfInstallmentsFromActiveOffer() + 1)
-                .mapToObj(installment -> new SmartPurchase(this, installment, installmentPrice))
-                .toList();
     }
 }
