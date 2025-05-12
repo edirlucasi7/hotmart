@@ -20,17 +20,6 @@ public class ProductAdminController {
     }
 
     @Transactional
-    @PutMapping("/{productId}/update/confirmationTime")
-    public ResponseEntity<?> update(@PathVariable Long productId, @RequestParam("confirmationTime") int confirmationTime) {
-        Optional<Product> possibleProduct = productRepository.findById(productId);
-        if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
-
-        Product product = possibleProduct.get();
-        product.updateConfirmationTime(confirmationTime);
-        return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("confirmationTime updated")));
-    }
-
-    @Transactional
     @PutMapping("/{productId}/update/fee")
     public ResponseEntity<?> update(@PathVariable Long productId, @RequestParam("confirmationTime") BigDecimal fee) {
         Optional<Product> possibleProduct = productRepository.findById(productId);

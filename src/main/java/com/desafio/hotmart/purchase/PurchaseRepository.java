@@ -14,12 +14,12 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
                 JOIN product pr ON pr.id = pu.product_id
             WHERE pu.user_id = :userId
                 AND pr.code = :productCode
-                AND pu.state = 'PROCESSED'
+                AND pu.status NOT IN ('REIMBURSED', 'EXPIRED', 'SUSPENDED')
                 AND pu.expiration_at >= :now), 'false') AS hasPurchaseProcesses
     """, nativeQuery = true)
     boolean hasValidPurchaseProcessedBy(Long userId, String productCode, LocalDateTime now);
 
-    default boolean hasValidPurchaseAssociatedWith(Long userId, String productCode, LocalDateTime now) {
+    default boolean hasValidPurchaseAssociatedWith(Long userId, String productCode) {
         return hasValidPurchaseProcessedBy(userId, productCode, LocalDateTime.now());
     }
 }

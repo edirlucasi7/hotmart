@@ -8,11 +8,10 @@ import jakarta.validation.constraints.NotNull;
 
 public record ProductRequest(@NotBlank @Email String email,
                              @NotNull String code,
-                             @NotNull int confirmationTimeToPix,
                              @NotNull @JsonProperty("offer") OfferRequest offerRequest) {
 
     public Product toProduct(User user) {
         Offer offer = offerRequest.toOffer();
-        return new Product(user, code, confirmationTimeToPix, offer);
+        return new Product(user, code, offer);
     }
 }

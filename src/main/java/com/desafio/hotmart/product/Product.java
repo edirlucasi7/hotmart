@@ -33,21 +33,18 @@ public class Product {
     @NotNull
     private BigDecimal fee;
 
-    private int confirmationTime;
-
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Offer> offers = new ArrayList<>();
 
     @Deprecated
     public Product() { }
 
-    public Product(User user, String code, int confirmationTime, Offer offer) {
+    public Product(User user, String code, Offer offer) {
         Assert.notNull(user, "User must not be null!");
         Assert.notNull(offer, "Offer must not be null!");
         Assert.notNull(code, "Code must not be null!");
         this.user = user;
         this.code = code;
-        this.confirmationTime = confirmationTime;
         this.fee = STANDARD_INTEREST_IN_PERCENTAGE;
         this.addOffer(offer);
     }
@@ -70,10 +67,6 @@ public class Product {
 
     public BigDecimal getFee() {
         return fee;
-    }
-
-    public int getConfirmationTime() {
-        return confirmationTime;
     }
 
     public List<Offer> getOffers() {
@@ -110,17 +103,18 @@ public class Product {
 
     public int getMaximumNumberOfInstallmentsFromActiveOffer() {
         if (!this.active) throw new IllegalStateException();
-        return this.offers.stream().filter(Offer::isActive).findFirst().map(Offer::getMaximumNumberOfInstallments).orElse(1);
+        return this.offers
+                .stream()
+                .filter(Offer::isActive)
+                .findFirst()
+                .map(Offer::getMaximumNumberOfInstallments)
+                .orElse(1);
     }
 
     public BigDecimal calculatePriceWithDiscount(BigDecimal discountAmount) {
         BigDecimal discountFactor = discountAmount.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         BigDecimal discountValue = getPriceFromActiveOffer().multiply(discountFactor);
         return getPriceFromActiveOffer().subtract(discountValue);
-    }
-
-    public void updateConfirmationTime(int confirmationTime) {
-        this.confirmationTime = confirmationTime;
     }
 
     public void updateFees(BigDecimal fees) {
