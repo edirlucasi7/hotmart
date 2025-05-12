@@ -2,6 +2,7 @@ package com.desafio.hotmart.purchase;
 
 import com.desafio.hotmart.product.Product;
 import com.desafio.hotmart.user.User;
+import com.github.f4b6a3.tsid.Tsid;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -38,7 +39,7 @@ public class Purchase {
     @Min(value = 0)
     private int retryAttempt = 0;
 
-    private String cartUUID;
+    private String cartUUID = Tsid.fast().toString();
 
     @ManyToOne
     @JoinColumn
