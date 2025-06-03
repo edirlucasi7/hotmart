@@ -12,16 +12,16 @@ public class User {
 
     @Embedded
     @NotNull
-    private ProfileVO profile;
+    private Profile profile;
 
     @Embedded
     @NotNull
-    private EmailVO email;
+    private Email email;
 
     @Deprecated
     public User() { }
 
-    public User(ProfileVO profile, EmailVO email) {
+    public User(Profile profile, Email email) {
         this.profile = profile;
         this.email = email;
     }

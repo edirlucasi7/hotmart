@@ -6,16 +6,16 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Embeddable
-public class EmailVO {
+public class Email {
 
     @jakarta.validation.constraints.Email
     @NotBlank
     private String email;
 
     @Deprecated
-    public EmailVO() { }
+    public Email() { }
 
-    public EmailVO(String email) {
+    public Email(String email) {
         this.email = email;
     }
 
@@ -26,7 +26,7 @@ public class EmailVO {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        EmailVO emailVO = (EmailVO) o;
+        Email emailVO = (Email) o;
         return Objects.equals(email, emailVO.email);
     }
 

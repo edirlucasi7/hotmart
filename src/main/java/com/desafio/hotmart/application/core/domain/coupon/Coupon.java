@@ -1,53 +1,47 @@
-package com.desafio.hotmart.coupon;
+package com.desafio.hotmart.application.core.domain.coupon;
 
+import com.desafio.hotmart.coupon.Status;
 import com.desafio.hotmart.product.Product;
-import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
 public class Coupon {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String code;
 
     private BigDecimal discountValue;
 
-    @ManyToOne
-    @JoinColumn
     private Product product;
 
     private final LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime expirationAt;
 
-    @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-    @Deprecated
-    public Coupon() { }
-
-    public Coupon(String code, BigDecimal discountValue, Product product, LocalDateTime expirationAt) {
+    public Coupon(String code, BigDecimal discountValue, Product product) {
         this.code = code;
         this.discountValue = discountValue;
         this.product = product;
-        this.expirationAt = expirationAt;
     }
 
-    public Product getProduct() {
-        return product;
+    public Long getId() {
+        return id;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     public BigDecimal getDiscountValue() {
         return discountValue;
     }
 
-    public String getCode() {
-        return code;
+    public Product getProduct() {
+        return product;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -62,7 +56,7 @@ public class Coupon {
         return status;
     }
 
-    public void invalidate() {
-        this.status = Status.INACTIVE;
+    public Coupon toCoupon() {
+        return new Coupon(code, discountValue, product);
     }
 }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Embeddable
-public class ProfileVO {
+public class Profile {
 
     private String firstName;
 
@@ -16,9 +16,9 @@ public class ProfileVO {
     private String username;
 
     @Deprecated
-    public ProfileVO() { }
+    public Profile() { }
 
-    public ProfileVO(String firstName, String name, String username) {
+    public Profile(String firstName, String name, String username) {
         this.firstName = firstName;
         this.name = name;
         this.username = username;
@@ -39,8 +39,8 @@ public class ProfileVO {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ProfileVO profileVO = (ProfileVO) o;
-        return Objects.equals(firstName, profileVO.firstName) && Objects.equals(name, profileVO.name) && Objects.equals(username, profileVO.username);
+        Profile profile = (Profile) o;
+        return Objects.equals(firstName, profile.firstName) && Objects.equals(name, profile.name) && Objects.equals(username, profile.username);
     }
 
     @Override

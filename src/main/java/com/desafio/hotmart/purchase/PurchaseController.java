@@ -1,6 +1,6 @@
 package com.desafio.hotmart.purchase;
 
-import com.desafio.hotmart.coupon.CouponService;
+import com.desafio.hotmart.application.core.service.coupon.CouponService;
 import com.desafio.hotmart.coupon.CouponValidator;
 import com.desafio.hotmart.product.Product;
 import com.desafio.hotmart.product.ProductRepository;

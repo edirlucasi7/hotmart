@@ -1,5 +1,8 @@
-package com.desafio.hotmart.coupon;
+package com.desafio.hotmart.infrastructure.adapter.in.coupon;
 
+import com.desafio.hotmart.application.core.domain.coupon.Coupon;
+import com.desafio.hotmart.application.core.service.coupon.CouponServicePort;
+import com.desafio.hotmart.infrastructure.adapter.out.coupon.entity.CouponEntity;
 import com.desafio.hotmart.product.Product;
 import com.desafio.hotmart.product.ProductRepository;
 import com.desafio.hotmart.purchase.response.GenericPaymentResponse;
@@ -12,20 +15,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/coupon")
 public class CouponController {
 
+    private final CouponServicePort couponServicePort;
     private final ProductRepository productRepository;
-    private final CouponRepository couponRepository;
-    private final CouponService couponService;
 
-    public CouponController(ProductRepository productRepository, CouponRepository couponRepository, CouponService couponService) {
+    public CouponController(CouponServicePort couponServicePort, ProductRepository productRepository) {
+        this.couponServicePort = couponServicePort;
         this.productRepository = productRepository;
-        this.couponRepository = couponRepository;
-        this.couponService = couponService;
     }
 
     @Transactional
@@ -35,11 +37,10 @@ public class CouponController {
         if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
         Product product = possibleProduct.get();
-        Optional<Coupon> activeCoupon = couponRepository.findCouponByCodeAndActiveStatus(request.code(), product.getId());
-        activeCoupon.ifPresent(couponService::invalidate);
+        Coupon activeCoupon = couponServicePort.invalidate(request.code(), request.discountValue(), product);
 
-        Coupon coupon = request.toCoupon(product);
-        couponRepository.save(coupon);
-        return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("coupon created successfully")));
+        Coupon coupon = couponServicePort.save(activeCoupon);
+        URI uri = URI.create("/coupon/" + coupon.getId());
+        return ResponseEntity.created(uri).body("coupon created successfully");
     }
 }
