@@ -1,5 +1,7 @@
 package com.desafio.hotmart.product;
 
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductOfferEntity;
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import com.desafio.hotmart.user.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
@@ -10,8 +12,8 @@ public record ProductRequest(@NotBlank @Email String email,
                              @NotNull String code,
                              @NotNull @JsonProperty("offer") OfferRequest offerRequest) {
 
-    public Product toProduct(User user) {
-        Offer offer = offerRequest.toOffer();
-        return new Product(user, code, offer);
+    public ProductEntity toProduct(User user) {
+        ProductOfferEntity productOfferEntity = offerRequest.toOffer();
+        return new ProductEntity(user, code, productOfferEntity);
     }
 }

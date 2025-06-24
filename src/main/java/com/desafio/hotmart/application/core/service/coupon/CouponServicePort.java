@@ -1,16 +1,17 @@
 package com.desafio.hotmart.application.core.service.coupon;
 
 import com.desafio.hotmart.application.core.domain.coupon.Coupon;
-import com.desafio.hotmart.product.Product;
+import com.desafio.hotmart.application.core.domain.product.Product;
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
 public interface CouponServicePort {
 
-    Optional<BigDecimal> tryGetDiscount(String coupon, Product product);
+    Optional<BigDecimal> tryGetDiscount(String coupon, ProductEntity productEntity);
 
     Coupon invalidate(String code, BigDecimal discountValue, Product product);
 
-    Coupon save(Coupon coupon);
+    Coupon save(Coupon coupon, Product product);
 }

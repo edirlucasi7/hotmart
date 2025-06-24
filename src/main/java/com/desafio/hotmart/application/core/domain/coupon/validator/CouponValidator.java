@@ -1,4 +1,4 @@
-package com.desafio.hotmart.coupon;
+package com.desafio.hotmart.application.core.domain.coupon.validator;
 
 public class CouponValidator {
 

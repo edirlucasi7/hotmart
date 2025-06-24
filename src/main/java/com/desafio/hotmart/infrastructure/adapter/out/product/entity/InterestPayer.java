@@ -1,4 +1,4 @@
-package com.desafio.hotmart.product;
+package com.desafio.hotmart.infrastructure.adapter.out.product.entity;
 
 import java.util.Arrays;
 

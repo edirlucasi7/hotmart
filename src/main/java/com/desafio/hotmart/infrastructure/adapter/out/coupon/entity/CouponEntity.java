@@ -1,8 +1,8 @@
 package com.desafio.hotmart.infrastructure.adapter.out.coupon.entity;
 
 import com.desafio.hotmart.application.core.domain.coupon.Coupon;
-import com.desafio.hotmart.coupon.Status;
-import com.desafio.hotmart.product.Product;
+import com.desafio.hotmart.application.core.domain.coupon.validator.Status;
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -21,8 +21,8 @@ public class CouponEntity {
     private BigDecimal discountValue;
 
     @ManyToOne
-    @JoinColumn
-    private Product product;
+    @JoinColumn(name = "product")
+    private ProductEntity productEntity;
 
     private final LocalDateTime createdAt = LocalDateTime.now();
 
@@ -34,22 +34,22 @@ public class CouponEntity {
     @Deprecated
     public CouponEntity() { }
 
-    public CouponEntity(String code, BigDecimal discountValue, Product product, LocalDateTime expirationAt) {
+    public CouponEntity(String code, BigDecimal discountValue, ProductEntity productEntity, LocalDateTime expirationAt) {
         this.code = code;
         this.discountValue = discountValue;
-        this.product = product;
+        this.productEntity = productEntity;
         this.expirationAt = expirationAt;
     }
 
-    public CouponEntity(Coupon activeCoupon) {
-        this.code = activeCoupon.getCode();
-        this.discountValue = activeCoupon.getDiscountValue();
-        this.product = activeCoupon.getProduct();
-        this.status = activeCoupon.getStatus();
+    public CouponEntity(Coupon coupon, ProductEntity productEntity) {
+        this.code = coupon.getCode();
+        this.discountValue = coupon.getDiscountValue();
+        this.productEntity = productEntity;
+        this.status = coupon.getStatus();
     }
 
-    public Product getProduct() {
-        return product;
+    public ProductEntity getProduct() {
+        return productEntity;
     }
 
     public BigDecimal getDiscountValue() {
@@ -78,6 +78,6 @@ public class CouponEntity {
     }
 
     public Coupon toCoupon() {
-        return new Coupon(code, discountValue, product);
+        return new Coupon(code, discountValue, productEntity.toProduct());
     }
 }

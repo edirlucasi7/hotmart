@@ -1,6 +1,6 @@
 package com.desafio.hotmart.purchase.validator;
 
-import com.desafio.hotmart.product.Product;
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import com.desafio.hotmart.purchase.PurchaseRequest;
 import com.desafio.hotmart.user.User;
 import org.springframework.stereotype.Component;
@@ -17,9 +17,9 @@ public class PurchaseHandlerValidator {
         this.purchaseValidatorRules = purchaseValidatorRules;
     }
 
-    public Optional<ResultErrorResponse> handler(Product product, User client, PurchaseRequest request, boolean smartPayment) {
+    public Optional<ResultErrorResponse> handler(ProductEntity productEntity, User client, PurchaseRequest request, boolean smartPayment) {
         return purchaseValidatorRules.stream()
-                .filter(rule -> !rule.isValid(product, client, request, smartPayment))
+                .filter(rule -> !rule.isValid(productEntity, client, request, smartPayment))
                 .map(PurchaseValidatorRules::getErrorResponse)
                 .findFirst();
     }

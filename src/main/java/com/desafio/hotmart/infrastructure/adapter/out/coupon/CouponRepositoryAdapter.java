@@ -1,11 +1,13 @@
 package com.desafio.hotmart.infrastructure.adapter.out.coupon;
 
 import com.desafio.hotmart.application.core.domain.coupon.Coupon;
+import com.desafio.hotmart.application.core.domain.product.Product;
 import com.desafio.hotmart.application.port.coupon.CouponRepositoryPort;
 import com.desafio.hotmart.infrastructure.adapter.out.coupon.entity.CouponEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.coupon.repository.CouponEntityRepository;
-import com.desafio.hotmart.product.Product;
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -26,14 +28,16 @@ public class CouponRepositoryAdapter implements CouponRepositoryPort {
 
     @Override
     public Coupon invalidate(String code, BigDecimal discountValue, Product product) {
-        Optional<CouponEntity> possibleCouponEntity = couponEntityRepository.findCouponByCodeAndProductWithActiveStatus(code, product.getId());
+        Optional<CouponEntity> possibleCouponEntity = couponEntityRepository.findByCodeAndProductEntity_IdAndStatus(code, product.getId());
         if (possibleCouponEntity.isEmpty()) return new Coupon(code, discountValue, product);
 
         return possibleCouponEntity.get().invalidate();
     }
 
     @Override
-    public Coupon save(Coupon coupon) {
-        return couponEntityRepository.save(new CouponEntity(coupon)).toCoupon();
+    @Transactional
+    public Coupon save(Coupon coupon, Product product) {
+        ProductEntity productEntity = new ProductEntity(product);
+        return couponEntityRepository.save(new CouponEntity(coupon, productEntity)).toCoupon();
     }
 }

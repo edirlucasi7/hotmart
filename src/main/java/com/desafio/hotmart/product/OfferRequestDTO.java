@@ -1,5 +1,6 @@
 package com.desafio.hotmart.product;
 
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductOfferEntity;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +12,7 @@ public record OfferRequestDTO(@Min(value = 1) @Max(value = 12) int maximumNumber
                               boolean smartPayment,
                               @NotBlank String interestPayer) {
 
-    public Offer toOffer() {
-        return new Offer(maximumNumberOfInstallments, price, smartPayment, interestPayer);
+    public ProductOfferEntity toOffer() {
+        return new ProductOfferEntity(maximumNumberOfInstallments, price, smartPayment, interestPayer);
     }
 }

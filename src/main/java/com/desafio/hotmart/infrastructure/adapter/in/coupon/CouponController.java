@@ -1,15 +1,14 @@
 package com.desafio.hotmart.infrastructure.adapter.in.coupon;
 
 import com.desafio.hotmart.application.core.domain.coupon.Coupon;
+import com.desafio.hotmart.application.core.domain.product.Product;
 import com.desafio.hotmart.application.core.service.coupon.CouponServicePort;
-import com.desafio.hotmart.infrastructure.adapter.out.coupon.entity.CouponEntity;
-import com.desafio.hotmart.product.Product;
-import com.desafio.hotmart.product.ProductRepository;
-import com.desafio.hotmart.purchase.response.GenericPaymentResponse;
-import com.desafio.hotmart.purchase.response.PaymentResponseDTO;
+import com.desafio.hotmart.infrastructure.adapter.in.product.ProductServicePort;
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,28 +17,30 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 @RestController
 @RequestMapping("/coupon")
 public class CouponController {
 
     private final CouponServicePort couponServicePort;
-    private final ProductRepository productRepository;
+    private final ProductServicePort productServicePort;
 
-    public CouponController(CouponServicePort couponServicePort, ProductRepository productRepository) {
+    public CouponController(CouponServicePort couponServicePort, ProductServicePort productServicePort) {
         this.couponServicePort = couponServicePort;
-        this.productRepository = productRepository;
+        this.productServicePort = productServicePort;
     }
 
-    @Transactional
     @PostMapping("/create")
-    public ResponseEntity<?> create(@Valid @RequestBody CouponRequest request) {
-        Optional<Product> possibleProduct = productRepository.findByCode(request.productCode());
-        if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
+    public ResponseEntity<String> create(@Valid @RequestBody CouponRequest request) {
+        Optional<Product> possibleProduct = productServicePort.findByCode(request.productCode());
+        if (possibleProduct.isEmpty()) return ResponseEntity.status(NOT_FOUND)
+                .body("Product not found with code: " + request.productCode());
 
         Product product = possibleProduct.get();
         Coupon activeCoupon = couponServicePort.invalidate(request.code(), request.discountValue(), product);
 
-        Coupon coupon = couponServicePort.save(activeCoupon);
+        Coupon coupon = couponServicePort.save(activeCoupon, product);
         URI uri = URI.create("/coupon/" + coupon.getId());
         return ResponseEntity.created(uri).body("coupon created successfully");
     }

@@ -1,5 +1,7 @@
-package com.desafio.hotmart.product;
+package com.desafio.hotmart.infrastructure.adapter.in.product;
 
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
+import com.desafio.hotmart.infrastructure.adapter.out.product.repository.ProductEntityRepository;
 import com.desafio.hotmart.purchase.response.GenericPaymentResponse;
 import com.desafio.hotmart.purchase.response.PaymentResponseDTO;
 import org.springframework.http.ResponseEntity;
@@ -13,20 +15,20 @@ import java.util.Optional;
 @RequestMapping("/admin/product")
 public class ProductAdminController {
 
-    private final ProductRepository productRepository;
+    private final ProductEntityRepository productEntityRepository;
 
-    public ProductAdminController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public ProductAdminController(ProductEntityRepository productEntityRepository) {
+        this.productEntityRepository = productEntityRepository;
     }
 
     @Transactional
     @PutMapping("/{productId}/update/fee")
     public ResponseEntity<?> update(@PathVariable Long productId, @RequestParam("confirmationTime") BigDecimal fee) {
-        Optional<Product> possibleProduct = productRepository.findById(productId);
+        Optional<ProductEntity> possibleProduct = productEntityRepository.findById(productId);
         if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
-        Product product = possibleProduct.get();
-        product.updateFees(fee);
+        ProductEntity productEntity = possibleProduct.get();
+        productEntity.updateFees(fee);
         return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("fee updated")));
     }
 }

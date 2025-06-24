@@ -1,6 +1,6 @@
 package com.desafio.hotmart.purchase;
 
-import com.desafio.hotmart.product.Product;
+import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import com.desafio.hotmart.user.User;
 import com.github.f4b6a3.tsid.Tsid;
 import jakarta.persistence.*;
@@ -43,7 +43,7 @@ public class Purchase {
 
     @ManyToOne
     @JoinColumn
-    private Product product;
+    private ProductEntity productEntity;
 
     @Enumerated(STRING)
     private PurchaseStatus status;
@@ -51,10 +51,10 @@ public class Purchase {
     @Deprecated
     public Purchase() { }
 
-    public Purchase(User user, BigDecimal price, Product product) {
+    public Purchase(User user, BigDecimal price, ProductEntity productEntity) {
         this.user = user;
         this.price = price;
-        this.product = product;
+        this.productEntity = productEntity;
         this.status = REGULAR;
     }
 
@@ -83,23 +83,23 @@ public class Purchase {
     }
 
     public boolean isInterestBorneByProductOwner() {
-        return !SMART.equals(this.status) && this.product.isPaidByProducer();
+        return SMART != this.status && this.productEntity.isPaidByProducer();
     }
 
     public BigDecimal getPrice() {
         return price;
     }
 
-    public Product getProduct() {
-        return product;
+    public ProductEntity getProduct() {
+        return productEntity;
     }
 
     public User getProductOwner() {
-        return product.getUser();
+        return productEntity.getUser();
     }
 
     public BigDecimal getFeeProduct() {
-        return product.getFee();
+        return productEntity.getFee();
     }
 
     public void updatedStatusToSmart() {

@@ -1,5 +1,6 @@
-package com.desafio.hotmart.product;
+package com.desafio.hotmart.infrastructure.adapter.out.product.entity;
 
+import com.desafio.hotmart.application.core.domain.product.Product;
 import com.desafio.hotmart.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -11,8 +12,8 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class Product {
+@Entity(name = "product")
+public class ProductEntity {
 
     private static final BigDecimal STANDARD_INTEREST_IN_PERCENTAGE = new BigDecimal("15.0");
 
@@ -33,20 +34,33 @@ public class Product {
     @NotNull
     private BigDecimal fee;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Offer> offers = new ArrayList<>();
+    @NotNull
+    @ElementCollection
+    @CollectionTable(name = "product_offers", joinColumns = @JoinColumn(name = "product_id"))
+    private List<ProductOfferEntity> offers = new ArrayList<>();
 
     @Deprecated
-    public Product() { }
+    public ProductEntity() { }
 
-    public Product(User user, String code, Offer offer) {
+    public ProductEntity(User user, String code, ProductOfferEntity productOfferEntity) {
         Assert.notNull(user, "User must not be null!");
-        Assert.notNull(offer, "Offer must not be null!");
+        Assert.notNull(productOfferEntity, "Offer must not be null!");
         Assert.notNull(code, "Code must not be null!");
         this.user = user;
         this.code = code;
         this.fee = STANDARD_INTEREST_IN_PERCENTAGE;
-        this.addOffer(offer);
+        this.addOffer(productOfferEntity);
+    }
+
+    public ProductEntity(Product product) {
+        this.id = product.getId();
+        this.user = product.getUser();
+        this.code = product.getCode();
+        this.active = product.isActive();
+        this.fee = product.getFee();
+        this.offers = product.getOffers().stream()
+                .map(ProductOfferEntity::new)
+                .toList();
     }
 
     public Long getId() {
@@ -69,7 +83,7 @@ public class Product {
         return fee;
     }
 
-    public List<Offer> getOffers() {
+    public List<ProductOfferEntity> getOffers() {
         return offers;
     }
 
@@ -77,23 +91,16 @@ public class Product {
         return user.getEmail();
     }
 
-    public void addOffer(Offer offer) {
-        this.offers.forEach(Offer::disable);
-        this.offers.add(offer);
-        offer.setPost(this);
+    public void addOffer(ProductOfferEntity productOfferEntity) {
+        this.offers.forEach(ProductOfferEntity::disable);
+        this.offers.add(productOfferEntity);
         this.activate();
-    }
-
-    public void removeOffer(Offer offer) {
-        this.offers.remove(offer);
-        offer.setPost(null);
-        if (!this.existsOfferActive()) this.disable();
     }
 
     public BigDecimal getPriceFromActiveOffer() {
         return this.offers.stream()
-                .filter(Offer::isActive)
-                .map(Offer::getPrice)
+                .filter(ProductOfferEntity::isActive)
+                .map(ProductOfferEntity::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -102,12 +109,12 @@ public class Product {
     }
 
     public int getMaximumNumberOfInstallmentsFromActiveOffer() {
-        if (!this.active) throw new IllegalStateException();
+        Assert.isTrue(this.active, "Product must be active to get maximum number of installments");
         return this.offers
                 .stream()
-                .filter(Offer::isActive)
+                .filter(ProductOfferEntity::isActive)
                 .findFirst()
-                .map(Offer::getMaximumNumberOfInstallments)
+                .map(ProductOfferEntity::getMaximumNumberOfInstallments)
                 .orElse(1);
     }
 
@@ -121,24 +128,26 @@ public class Product {
         this.fee = fees;
     }
 
-    private void disable() {
-        if (!this.active) return;
-        this.active = false;
-    }
-
     private void activate() {
         if (this.active) return;
         this.active = true;
     }
 
-    private Offer getActiveOffer() {
+    private ProductOfferEntity getActiveOffer() {
         return this.offers.stream()
-                .filter(Offer::isActive)
+                .filter(ProductOfferEntity::isActive)
                 .findFirst()
                 .orElseThrow(IllegalStateException::new);
     }
 
-    private boolean existsOfferActive() {
-        return this.offers.stream().anyMatch(Offer::isActive);
+    public Product toProduct() {
+        return new Product(
+                this.id,
+                this.user,
+                this.code,
+                this.active,
+                this.fee,
+                this.offers.stream().map(ProductOfferEntity::toProductOffer).toList()
+        );
     }
 }

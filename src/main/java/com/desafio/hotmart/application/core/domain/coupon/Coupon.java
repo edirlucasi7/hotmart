@@ -1,7 +1,7 @@
 package com.desafio.hotmart.application.core.domain.coupon;
 
-import com.desafio.hotmart.coupon.Status;
-import com.desafio.hotmart.product.Product;
+import com.desafio.hotmart.application.core.domain.product.Product;
+import com.desafio.hotmart.application.core.domain.coupon.validator.Status;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
