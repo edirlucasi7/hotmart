@@ -2,8 +2,6 @@ package com.desafio.hotmart.infrastructure.adapter.in.product;
 
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.product.repository.ProductEntityRepository;
-import com.desafio.hotmart.purchase.response.GenericPaymentResponse;
-import com.desafio.hotmart.purchase.response.PaymentResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +21,12 @@ public class ProductAdminController {
 
     @Transactional
     @PutMapping("/{productId}/update/fee")
-    public ResponseEntity<?> update(@PathVariable Long productId, @RequestParam("confirmationTime") BigDecimal fee) {
+    public ResponseEntity<Void> update(@PathVariable Long productId, @RequestParam("confirmationTime") BigDecimal fee) {
         Optional<ProductEntity> possibleProduct = productEntityRepository.findById(productId);
         if (possibleProduct.isEmpty()) return ResponseEntity.notFound().build();
 
         ProductEntity productEntity = possibleProduct.get();
         productEntity.updateFees(fee);
-        return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("fee updated")));
+        return ResponseEntity.ok().build();
     }
 }

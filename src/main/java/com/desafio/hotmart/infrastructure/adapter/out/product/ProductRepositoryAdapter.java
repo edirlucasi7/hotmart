@@ -1,14 +1,15 @@
 package com.desafio.hotmart.infrastructure.adapter.out.product;
 
 import com.desafio.hotmart.application.core.domain.product.Product;
+import com.desafio.hotmart.application.core.domain.product.ProductOffer;
 import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
 import com.desafio.hotmart.application.port.PagePort;
 import com.desafio.hotmart.application.port.product.ProductRepositoryPort;
+import com.desafio.hotmart.infrastructure.adapter.in.product.OfferRequest;
 import com.desafio.hotmart.infrastructure.adapter.out.PageDTO;
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductOfferEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.product.repository.ProductEntityRepository;
-import com.desafio.hotmart.product.OfferRequestDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
@@ -42,13 +43,16 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
     }
 
     @Override
-    public void addOffer(String productCode, OfferRequestDTO request) throws ProductNotFoundException {
+    public void addOffer(String productCode, ProductOffer request) throws ProductNotFoundException {
         ProductEntity productEntity = productEntityRepository.findByCode(productCode)
                 .orElseThrow(() -> new ProductNotFoundException(productCode));
 
-        ProductOfferEntity productOfferEntity = request.toOffer();
-        productEntity.addOffer(productOfferEntity);
-
+        productEntity.addOffer(new ProductOfferEntity(request));
         productEntityRepository.save(productEntity);
+    }
+
+    @Override
+    public Optional<Product> findById(Long id) {
+        return productEntityRepository.findById(id).map(ProductEntity::toProduct);
     }
 }

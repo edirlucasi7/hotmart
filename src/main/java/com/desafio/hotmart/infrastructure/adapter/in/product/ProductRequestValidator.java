@@ -1,4 +1,4 @@
-package com.desafio.hotmart.product;
+package com.desafio.hotmart.infrastructure.adapter.in.product;
 
 import com.desafio.hotmart.infrastructure.adapter.out.product.repository.ProductEntityRepository;
 import org.springframework.lang.NonNull;

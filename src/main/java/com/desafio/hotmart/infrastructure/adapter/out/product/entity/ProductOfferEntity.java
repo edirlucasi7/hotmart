@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 import static com.desafio.hotmart.infrastructure.adapter.out.product.entity.InterestPayer.INFO_PRODUCER;
-import static com.desafio.hotmart.infrastructure.adapter.out.product.entity.InterestPayer.fromName;
 
 @Embeddable
 public class ProductOfferEntity {
@@ -34,13 +33,6 @@ public class ProductOfferEntity {
 
     @Deprecated
     public ProductOfferEntity() { }
-
-    public ProductOfferEntity(int maximumNumberOfInstallments, BigDecimal price, boolean smartPayment, String interestPayer) {
-        this.maximumNumberOfInstallments = maximumNumberOfInstallments;
-        this.price = price;
-        this.smartPayment = smartPayment;
-        this.interestPayer = fromName(interestPayer);
-    }
 
     public ProductOfferEntity(ProductOffer productOffer) {
         this.maximumNumberOfInstallments = productOffer.getMaximumNumberOfInstallments();

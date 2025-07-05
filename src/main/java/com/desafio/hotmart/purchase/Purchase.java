@@ -1,7 +1,7 @@
 package com.desafio.hotmart.purchase;
 
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
-import com.desafio.hotmart.user.User;
+import com.desafio.hotmart.application.core.domain.user.User;
 import com.github.f4b6a3.tsid.Tsid;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -42,7 +42,7 @@ public class Purchase {
     private String cartUUID = Tsid.fast().toString();
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "product_id")
     private ProductEntity productEntity;
 
     @Enumerated(STRING)
@@ -95,7 +95,7 @@ public class Purchase {
     }
 
     public User getProductOwner() {
-        return productEntity.getUser();
+        return productEntity.getUserEntity().toUser();
     }
 
     public BigDecimal getFeeProduct() {

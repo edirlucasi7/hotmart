@@ -1,11 +1,11 @@
 package com.desafio.hotmart.application.core.service.product;
 
 import com.desafio.hotmart.application.core.domain.product.Product;
-import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
+import com.desafio.hotmart.application.core.domain.product.ProductOffer;
 import com.desafio.hotmart.application.port.PagePort;
 import com.desafio.hotmart.application.port.product.ProductRepositoryPort;
+import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
 import com.desafio.hotmart.infrastructure.adapter.in.product.ProductServicePort;
-import com.desafio.hotmart.product.OfferRequestDTO;
 
 import java.util.Optional;
 
@@ -33,7 +33,12 @@ public class ProductService implements ProductServicePort {
     }
 
     @Override
-    public void addOffer(String productCode, OfferRequestDTO request) throws ProductNotFoundException {
+    public void addOffer(String productCode, ProductOffer request) throws ProductNotFoundException {
         productRepositoryPort.addOffer(productCode, request);
+    }
+
+    @Override
+    public Optional<Product> findById(Long id) {
+        return productRepositoryPort.findById(id);
     }
 }

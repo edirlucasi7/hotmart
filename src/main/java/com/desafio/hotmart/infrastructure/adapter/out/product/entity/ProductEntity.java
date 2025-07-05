@@ -1,7 +1,8 @@
 package com.desafio.hotmart.infrastructure.adapter.out.product.entity;
 
 import com.desafio.hotmart.application.core.domain.product.Product;
-import com.desafio.hotmart.user.User;
+import com.desafio.hotmart.application.core.domain.user.User;
+import com.desafio.hotmart.infrastructure.adapter.out.user.entity.UserEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +25,7 @@ public class ProductEntity {
     @NotNull
     @ManyToOne
     @JoinColumn
-    private User user;
+    private UserEntity userEntity;
 
     @NotBlank
     private String code;
@@ -46,7 +47,7 @@ public class ProductEntity {
         Assert.notNull(user, "User must not be null!");
         Assert.notNull(productOfferEntity, "Offer must not be null!");
         Assert.notNull(code, "Code must not be null!");
-        this.user = user;
+        this.userEntity = new UserEntity(user);
         this.code = code;
         this.fee = STANDARD_INTEREST_IN_PERCENTAGE;
         this.addOffer(productOfferEntity);
@@ -54,7 +55,7 @@ public class ProductEntity {
 
     public ProductEntity(Product product) {
         this.id = product.getId();
-        this.user = product.getUser();
+        this.userEntity = new UserEntity(product.getUser());
         this.code = product.getCode();
         this.active = product.isActive();
         this.fee = product.getFee();
@@ -67,8 +68,8 @@ public class ProductEntity {
         return id;
     }
 
-    public User getUser() {
-        return user;
+    public UserEntity getUserEntity() {
+        return userEntity;
     }
 
     public boolean isActive() {
@@ -88,7 +89,7 @@ public class ProductEntity {
     }
 
     public String getUserEmail() {
-        return user.getEmail();
+        return userEntity.getEmail();
     }
 
     public void addOffer(ProductOfferEntity productOfferEntity) {
@@ -143,7 +144,7 @@ public class ProductEntity {
     public Product toProduct() {
         return new Product(
                 this.id,
-                this.user,
+                this.userEntity.toUser(),
                 this.code,
                 this.active,
                 this.fee,

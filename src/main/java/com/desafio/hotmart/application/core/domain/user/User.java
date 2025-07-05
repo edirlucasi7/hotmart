@@ -1,24 +1,13 @@
-package com.desafio.hotmart.user;
+package com.desafio.hotmart.application.core.domain.user;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-
-@Entity
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
-    @NotNull
     private Profile profile;
 
-    @Embedded
-    @NotNull
     private Email email;
 
-    @Deprecated
     public User() { }
 
     public User(Profile profile, Email email) {
@@ -40,5 +29,9 @@ public class User {
 
     public String getEmail() {
         return email.getEmail();
+    }
+
+    public Profile getProfile() {
+        return profile;
     }
 }

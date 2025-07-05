@@ -11,7 +11,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
         SELECT COALESCE(
            (SELECT 'true'
             FROM purchase pu
-                JOIN productEntity pr ON pr.id = pu.product_id
+                JOIN product pr ON pr.id = pu.product_id
             WHERE pu.user_id = :userId
                 AND pr.code = :productCode
                 AND pu.status NOT IN ('REIMBURSED', 'EXPIRED', 'SUSPENDED')

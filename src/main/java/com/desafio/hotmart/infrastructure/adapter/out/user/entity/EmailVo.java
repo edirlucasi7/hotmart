@@ -1,4 +1,4 @@
-package com.desafio.hotmart.user;
+package com.desafio.hotmart.infrastructure.adapter.out.user.entity;
 
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
@@ -6,16 +6,16 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Embeddable
-public class Email {
+public class EmailVo {
 
     @jakarta.validation.constraints.Email
     @NotBlank
     private String email;
 
     @Deprecated
-    public Email() { }
+    public EmailVo() { }
 
-    public Email(String email) {
+    public EmailVo(String email) {
         this.email = email;
     }
 
@@ -26,7 +26,7 @@ public class Email {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Email emailVO = (Email) o;
+        EmailVo emailVO = (EmailVo) o;
         return Objects.equals(email, emailVO.email);
     }
 

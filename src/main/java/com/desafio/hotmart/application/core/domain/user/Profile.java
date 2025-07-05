@@ -1,4 +1,4 @@
-package com.desafio.hotmart.user;
+package com.desafio.hotmart.application.core.domain.user;
 
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;

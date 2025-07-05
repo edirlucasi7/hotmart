@@ -1,7 +1,7 @@
 package com.desafio.hotmart.clientPayout;
 
 import com.desafio.hotmart.purchase.Purchase;
-import com.desafio.hotmart.user.User;
+import com.desafio.hotmart.application.core.domain.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 

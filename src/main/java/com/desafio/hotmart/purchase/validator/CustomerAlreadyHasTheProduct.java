@@ -3,7 +3,7 @@ package com.desafio.hotmart.purchase.validator;
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import com.desafio.hotmart.purchase.PurchaseRepository;
 import com.desafio.hotmart.purchase.PurchaseRequest;
-import com.desafio.hotmart.user.User;
+import com.desafio.hotmart.application.core.domain.user.User;
 import org.springframework.stereotype.Component;
 
 @Component
