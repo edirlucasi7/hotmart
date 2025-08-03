@@ -2,10 +2,9 @@ package com.desafio.hotmart.infrastructure.adapter.out.product;
 
 import com.desafio.hotmart.application.core.domain.product.Product;
 import com.desafio.hotmart.application.core.domain.product.ProductOffer;
-import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
 import com.desafio.hotmart.application.port.PagePort;
 import com.desafio.hotmart.application.port.product.ProductRepositoryPort;
-import com.desafio.hotmart.infrastructure.adapter.in.product.OfferRequest;
+import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
 import com.desafio.hotmart.infrastructure.adapter.out.PageDTO;
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductOfferEntity;
@@ -54,5 +53,10 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
     @Override
     public Optional<Product> findById(Long id) {
         return productEntityRepository.findById(id).map(ProductEntity::toProduct);
+    }
+
+    @Override
+    public Optional<Product> findByIdAndActiveTrue(String code) {
+        return productEntityRepository.findByCodeAndActiveIsTrue(code).map(ProductEntity::toProduct);
     }
 }

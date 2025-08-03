@@ -1,6 +1,7 @@
 package com.desafio.hotmart.infrastructure.adapter.out.product.entity;
 
 import com.desafio.hotmart.application.core.domain.product.Product;
+import com.desafio.hotmart.application.core.domain.purchase.Purchase;
 import com.desafio.hotmart.application.core.domain.user.User;
 import com.desafio.hotmart.infrastructure.adapter.out.user.entity.UserEntity;
 import jakarta.persistence.*;
@@ -9,7 +10,6 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,65 +64,14 @@ public class ProductEntity {
                 .toList();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public UserEntity getUserEntity() {
-        return userEntity;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
     public String getCode() {
         return code;
-    }
-
-    public BigDecimal getFee() {
-        return fee;
-    }
-
-    public List<ProductOfferEntity> getOffers() {
-        return offers;
-    }
-
-    public String getUserEmail() {
-        return userEntity.getEmail();
     }
 
     public void addOffer(ProductOfferEntity productOfferEntity) {
         this.offers.forEach(ProductOfferEntity::disable);
         this.offers.add(productOfferEntity);
         this.activate();
-    }
-
-    public BigDecimal getPriceFromActiveOffer() {
-        return this.offers.stream()
-                .filter(ProductOfferEntity::isActive)
-                .map(ProductOfferEntity::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    public boolean isPaidByProducer() {
-        return getActiveOffer().isPaidByProducer();
-    }
-
-    public int getMaximumNumberOfInstallmentsFromActiveOffer() {
-        Assert.isTrue(this.active, "Product must be active to get maximum number of installments");
-        return this.offers
-                .stream()
-                .filter(ProductOfferEntity::isActive)
-                .findFirst()
-                .map(ProductOfferEntity::getMaximumNumberOfInstallments)
-                .orElse(1);
-    }
-
-    public BigDecimal calculatePriceWithDiscount(BigDecimal discountAmount) {
-        BigDecimal discountFactor = discountAmount.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-        BigDecimal discountValue = getPriceFromActiveOffer().multiply(discountFactor);
-        return getPriceFromActiveOffer().subtract(discountValue);
     }
 
     public void updateFees(BigDecimal fees) {
@@ -134,21 +83,10 @@ public class ProductEntity {
         this.active = true;
     }
 
-    private ProductOfferEntity getActiveOffer() {
-        return this.offers.stream()
-                .filter(ProductOfferEntity::isActive)
-                .findFirst()
-                .orElseThrow(IllegalStateException::new);
-    }
-
     public Product toProduct() {
-        return new Product(
-                this.id,
-                this.userEntity.toUser(),
-                this.code,
-                this.active,
-                this.fee,
-                this.offers.stream().map(ProductOfferEntity::toProductOffer).toList()
-        );
+        return new Product(this.id, this.userEntity.toUser(), this.code, this.active, this.fee,
+                this.offers.stream()
+                .map(ProductOfferEntity::toProductOffer)
+                .toList());
     }
 }

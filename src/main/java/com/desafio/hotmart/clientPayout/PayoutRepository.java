@@ -1,6 +1,6 @@
 package com.desafio.hotmart.clientPayout;
 
-import com.desafio.hotmart.purchase.Purchase;
+import com.desafio.hotmart.application.core.domain.purchase.Purchase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

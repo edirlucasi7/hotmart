@@ -1,61 +1,47 @@
-package com.desafio.hotmart.purchase;
+package com.desafio.hotmart.application.core.domain.purchase;
 
-import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
+import com.desafio.hotmart.application.core.domain.product.Product;
 import com.desafio.hotmart.application.core.domain.user.User;
 import com.github.f4b6a3.tsid.Tsid;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static com.desafio.hotmart.purchase.PurchaseStatus.REGULAR;
-import static com.desafio.hotmart.purchase.PurchaseStatus.SMART;
-import static jakarta.persistence.EnumType.STRING;
+import static com.desafio.hotmart.application.core.domain.purchase.PurchaseStatus.REGULAR;
+import static com.desafio.hotmart.application.core.domain.purchase.PurchaseStatus.SMART;
 
-@Entity
 public class Purchase {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn
     private User user;
 
-    @NotNull
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @NotNull
     private LocalDateTime expirationAt = LocalDateTime.now().plusYears(1);
 
     private LocalDateTime updatedAt;
 
-    @Min(0)
     private BigDecimal price;
 
-    @Min(value = 0)
     private int retryAttempt = 0;
 
     private String cartUUID = Tsid.fast().toString();
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private ProductEntity productEntity;
+    private Product product;
 
-    @Enumerated(STRING)
     private PurchaseStatus status;
 
-    @Deprecated
+    private PurchaseType type;
+
     public Purchase() { }
 
-    public Purchase(User user, BigDecimal price, ProductEntity productEntity) {
+    public Purchase(User user, BigDecimal price, Product product, PurchaseType type) {
         this.user = user;
         this.price = price;
-        this.productEntity = productEntity;
+        this.product = product;
         this.status = REGULAR;
+        this.type = type;
     }
 
     public Long getId() {
@@ -83,26 +69,42 @@ public class Purchase {
     }
 
     public boolean isInterestBorneByProductOwner() {
-        return SMART != this.status && this.productEntity.isPaidByProducer();
+        return SMART != this.status && this.product.isPaidByProducer();
     }
 
     public BigDecimal getPrice() {
         return price;
     }
 
-    public ProductEntity getProduct() {
-        return productEntity;
+    public Product getProduct() {
+        return product;
     }
 
     public User getProductOwner() {
-        return productEntity.getUserEntity().toUser();
+        return product.getUser();
     }
 
     public BigDecimal getFeeProduct() {
-        return productEntity.getFee();
+        return product.getFee();
     }
 
     public void updatedStatusToSmart() {
         this.status = SMART;
+    }
+
+    public PurchaseStatus assignStatus(boolean isSmart) {
+        return isSmart ? SMART : REGULAR;
+    }
+
+    public String getProductCode() {
+        return this.product.getCode();
+    }
+
+    public String getEmail() {
+        return this.user.getEmail();
+    }
+
+    public PurchaseType getType() {
+        return this.type;
     }
 }

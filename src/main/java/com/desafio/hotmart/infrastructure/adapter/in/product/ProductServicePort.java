@@ -18,4 +18,8 @@ public interface ProductServicePort {
     void addOffer(String productCode, ProductOffer offer) throws ProductNotFoundException;
 
     Optional<Product> findById(Long id);
+
+    Optional<Product> findByIdAndActiveTrue(String code);
+
+
 }

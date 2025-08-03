@@ -1,11 +1,12 @@
-package com.desafio.hotmart.purchase;
+package com.desafio.hotmart.infrastructure.adapter.out.purchase.repository;
 
+import com.desafio.hotmart.infrastructure.adapter.out.purchase.entity.PurchaseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 
-public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
+public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Long> {
 
     @Query(value = """
         SELECT COALESCE(

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface CouponRepositoryPort {
 
-    Optional<CouponEntity> findCouponByCodeAndProduct(String coupon, Long productId);
+    Optional<Coupon> findCouponByCodeAndProduct(String coupon, Long productId);
 
     Coupon invalidate(String code, BigDecimal discountValue, Product product);
 

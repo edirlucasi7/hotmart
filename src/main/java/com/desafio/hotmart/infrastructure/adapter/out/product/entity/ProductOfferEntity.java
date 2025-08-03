@@ -11,8 +11,6 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import static com.desafio.hotmart.infrastructure.adapter.out.product.entity.InterestPayer.INFO_PRODUCER;
-
 @Embeddable
 public class ProductOfferEntity {
 
@@ -60,10 +58,6 @@ public class ProductOfferEntity {
 
     public void disable() {
         this.active = false;
-    }
-
-    public boolean isPaidByProducer() {
-        return this.interestPayer == INFO_PRODUCER;
     }
 
     public ProductOffer toProductOffer() {

@@ -7,4 +7,6 @@ import java.util.Optional;
 public interface UserServicePort {
 
     Optional<User> findByEmail(String email);
+
+    User getBy(String email);
 }

@@ -4,6 +4,7 @@ import com.desafio.hotmart.application.core.domain.user.User;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,5 +67,39 @@ public class Product {
 
     public String getUsername() {
         return user.getUsername();
+    }
+
+    public int getMaximumNumberOfInstallmentsFromActiveOffer() {
+        Assert.isTrue(this.active, "Product must be active to get maximum number of installments");
+        return this.offers
+                .stream()
+                .filter(ProductOffer::isActive)
+                .findFirst()
+                .map(ProductOffer::getMaximumNumberOfInstallments)
+                .orElse(1);
+    }
+
+    public BigDecimal calculatePriceWithDiscount(BigDecimal discountAmount) {
+        BigDecimal discountFactor = discountAmount.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        BigDecimal discountValue = getPriceFromActiveOffer().multiply(discountFactor);
+        return getPriceFromActiveOffer().subtract(discountValue);
+    }
+
+    public BigDecimal getPriceFromActiveOffer() {
+        return this.offers.stream()
+                .filter(ProductOffer::isActive)
+                .map(ProductOffer::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public boolean isPaidByProducer() {
+        return getActiveOffer().isPaidByProducer();
+    }
+
+    private ProductOffer getActiveOffer() {
+        return this.offers.stream()
+                .filter(ProductOffer::isActive)
+                .findFirst()
+                .orElseThrow(IllegalStateException::new);
     }
 }

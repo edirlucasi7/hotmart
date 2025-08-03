@@ -1,7 +1,8 @@
-package com.desafio.hotmart.purchase;
+package com.desafio.hotmart.application.core.domain.purchase;
 
 import java.util.Arrays;
 
+// TODO tem que estar persistido no banco de dados
 public enum PurchaseType {
     CREDIT_CARD(State.PROCESSED, true), PIX(State.WAIT, false), TICKET(State.WAIT, false);
 

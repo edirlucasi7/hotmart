@@ -4,6 +4,8 @@ import com.desafio.hotmart.infrastructure.adapter.out.product.entity.InterestPay
 
 import java.math.BigDecimal;
 
+import static com.desafio.hotmart.infrastructure.adapter.out.product.entity.InterestPayer.INFO_PRODUCER;
+
 public class ProductOffer {
 
     private int maximumNumberOfInstallments;
@@ -43,5 +45,9 @@ public class ProductOffer {
 
     public InterestPayer getInterestPayer() {
         return interestPayer;
+    }
+
+    public boolean isPaidByProducer() {
+        return this.interestPayer == INFO_PRODUCER;
     }
 }

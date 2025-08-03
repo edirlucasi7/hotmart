@@ -18,4 +18,6 @@ public interface ProductRepositoryPort {
     void addOffer(String productCode, ProductOffer request) throws ProductNotFoundException;
 
     Optional<Product> findById(Long id);
+
+    Optional<Product> findByIdAndActiveTrue(String code);
 }

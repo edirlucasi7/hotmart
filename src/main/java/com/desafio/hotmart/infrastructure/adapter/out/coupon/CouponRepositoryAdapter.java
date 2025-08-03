@@ -22,8 +22,8 @@ public class CouponRepositoryAdapter implements CouponRepositoryPort {
     }
 
     @Override
-    public Optional<CouponEntity> findCouponByCodeAndProduct(String coupon, Long productId) {
-        return couponEntityRepository.findCouponByCodeAndProduct(coupon, productId);
+    public Optional<Coupon> findCouponByCodeAndProduct(String coupon, Long productId) {
+        return couponEntityRepository.findCouponByCodeAndProduct(coupon, productId).map(CouponEntity::toCoupon);
     }
 
     @Override

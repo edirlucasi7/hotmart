@@ -41,4 +41,9 @@ public class ProductService implements ProductServicePort {
     public Optional<Product> findById(Long id) {
         return productRepositoryPort.findById(id);
     }
+
+    @Override
+    public Optional<Product> findByIdAndActiveTrue(String code) {
+        return productRepositoryPort.findByIdAndActiveTrue(code);
+    }
 }
