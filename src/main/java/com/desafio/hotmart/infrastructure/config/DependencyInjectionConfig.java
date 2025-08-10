@@ -3,7 +3,7 @@ package com.desafio.hotmart.infrastructure.config;
 import com.desafio.hotmart.application.core.service.coupon.CouponService;
 import com.desafio.hotmart.application.core.service.coupon.CouponServicePort;
 import com.desafio.hotmart.application.core.service.product.ProductService;
-import com.desafio.hotmart.application.core.service.purchase.PurchaseService;
+import com.desafio.hotmart.application.core.service.purchase.PurchaseCreateService;
 import com.desafio.hotmart.application.port.coupon.CouponRepositoryPort;
 import com.desafio.hotmart.application.port.product.ProductRepositoryPort;
 import com.desafio.hotmart.application.port.purchase.PurchaseRepositoryPort;
@@ -28,6 +28,6 @@ public class DependencyInjectionConfig {
 
     @Bean
     public PurchaseServicePort purchaseService(PurchaseRepositoryPort purchaseRepositoryPort, ProductServicePort productServicePort, UserServicePort userServicePort) {
-        return new PurchaseService(purchaseRepositoryPort, productServicePort, userServicePort);
+        return new PurchaseCreateService(purchaseRepositoryPort, productServicePort, userServicePort);
     }
 }

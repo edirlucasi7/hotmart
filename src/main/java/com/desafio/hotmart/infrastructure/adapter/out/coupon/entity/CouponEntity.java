@@ -34,17 +34,20 @@ public class CouponEntity {
     @Deprecated
     public CouponEntity() { }
 
-    public CouponEntity(String code, BigDecimal discountValue, ProductEntity productEntity, LocalDateTime expirationAt) {
-        this.code = code;
-        this.discountValue = discountValue;
-        this.productEntity = productEntity;
-        this.expirationAt = expirationAt;
-    }
-
     public CouponEntity(Coupon coupon, ProductEntity productEntity) {
         this.code = coupon.getCode();
         this.discountValue = coupon.getDiscountValue();
         this.productEntity = productEntity;
+        this.expirationAt = coupon.getExpirationAt();
+        this.status = coupon.getStatus();
+    }
+
+    public CouponEntity(Coupon coupon) {
+        this.id = coupon.getId();
+        this.code = coupon.getCode();
+        this.discountValue = coupon.getDiscountValue();
+        this.productEntity = new ProductEntity(coupon.getProduct());
+        this.expirationAt = coupon.getExpirationAt();
         this.status = coupon.getStatus();
     }
 
@@ -72,12 +75,11 @@ public class CouponEntity {
         return status;
     }
 
-    public Coupon invalidate() {
+    public void invalidateActiveCoupon() {
         this.status = Status.INACTIVE;
-        return this.toCoupon();
     }
 
     public Coupon toCoupon() {
-        return new Coupon(code, discountValue, productEntity.toProduct());
+        return new Coupon(id, code, discountValue, expirationAt, productEntity.toProduct());
     }
 }

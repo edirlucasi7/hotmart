@@ -1,11 +1,10 @@
 package com.desafio.hotmart.infrastructure.adapter.in.purchase;
 
+import com.desafio.hotmart.application.core.domain.coupon.Coupon;
 import com.desafio.hotmart.application.core.domain.coupon.validator.CouponValidator;
 import com.desafio.hotmart.application.core.service.coupon.CouponServicePort;
-import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -23,12 +22,11 @@ public class PurchaseController {
         this.couponServicePort = couponServicePort;
     }
 
-    @Transactional
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody PurchaseRequest request, @RequestParam(required = false) String coupon,
-                                    @RequestParam(required = false) boolean smartPayment) throws ProductNotFoundException {
+                                    @RequestParam(required = false) boolean smartPayment) {
 
-        Optional<BigDecimal> discount = Optional.of(BigDecimal.ZERO);
+        Optional<Coupon> discount = Optional.empty();
         if (CouponValidator.isValid(coupon)) {
             discount = couponServicePort.tryGetDiscount(coupon, request.productCode());
             if (discount.isEmpty()) return ResponseEntity.unprocessableEntity()
@@ -37,7 +35,7 @@ public class PurchaseController {
 
         // PurchaseType.getByType(request.type()) processar no provedor de pagamento
 
-        purchaseServicePort.save(request, discount.get(), smartPayment);
+        purchaseServicePort.save(request, discount.orElse(null), smartPayment);
 
         return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("purchase received")));
     }

@@ -1,4 +1,4 @@
-package com.desafio.hotmart.infrastructure.adapter.in.product;
+package com.desafio.hotmart.infrastructure.adapter.out.product;
 
 import com.desafio.hotmart.application.core.domain.product.Product;
 

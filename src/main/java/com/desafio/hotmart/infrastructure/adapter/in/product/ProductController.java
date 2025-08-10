@@ -3,8 +3,8 @@ package com.desafio.hotmart.infrastructure.adapter.in.product;
 import com.desafio.hotmart.application.core.domain.product.Product;
 import com.desafio.hotmart.application.core.domain.user.User;
 import com.desafio.hotmart.application.port.PagePort;
-import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
 import com.desafio.hotmart.infrastructure.adapter.in.user.UserServicePort;
+import com.desafio.hotmart.infrastructure.adapter.out.product.ProductView;
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -64,12 +63,7 @@ public class ProductController {
     @Transactional
     @PostMapping("/offer/add")
     public ResponseEntity<?> addOffer(@RequestParam String productCode, @Valid @RequestBody OfferRequest request) {
-        try {
-            productServicePort.addOffer(productCode, request.toOffer());
-            return ResponseEntity.ok().build();
-        } catch (ProductNotFoundException e) {
-            // TODO essa não é a única exceção que pode ocorrer aqui
-            return ResponseEntity.status(404).body(Map.of("error: ", e.getMessage()));
-        }
+        productServicePort.addOffer(productCode, request.toOffer());
+        return ResponseEntity.ok().build();
     }
 }

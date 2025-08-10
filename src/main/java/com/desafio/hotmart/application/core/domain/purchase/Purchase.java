@@ -1,5 +1,6 @@
 package com.desafio.hotmart.application.core.domain.purchase;
 
+import com.desafio.hotmart.application.core.domain.coupon.Coupon;
 import com.desafio.hotmart.application.core.domain.product.Product;
 import com.desafio.hotmart.application.core.domain.user.User;
 import com.github.f4b6a3.tsid.Tsid;
@@ -34,11 +35,14 @@ public class Purchase {
 
     private PurchaseType type;
 
+    private Coupon coupon;
+
     public Purchase() { }
 
-    public Purchase(User user, BigDecimal price, Product product, PurchaseType type) {
+    public Purchase(User user, Coupon coupon, Product product, PurchaseType type) {
         this.user = user;
-        this.price = price;
+        this.coupon = coupon;
+        this.price = product.calculatePriceWithDiscount(coupon);
         this.product = product;
         this.status = REGULAR;
         this.type = type;
@@ -68,28 +72,12 @@ public class Purchase {
         return status;
     }
 
-    public boolean isInterestBorneByProductOwner() {
-        return SMART != this.status && this.product.isPaidByProducer();
-    }
-
     public BigDecimal getPrice() {
         return price;
     }
 
     public Product getProduct() {
         return product;
-    }
-
-    public User getProductOwner() {
-        return product.getUser();
-    }
-
-    public BigDecimal getFeeProduct() {
-        return product.getFee();
-    }
-
-    public void updatedStatusToSmart() {
-        this.status = SMART;
     }
 
     public PurchaseStatus assignStatus(boolean isSmart) {
@@ -104,7 +92,19 @@ public class Purchase {
         return this.user.getEmail();
     }
 
-    public PurchaseType getType() {
-        return this.type;
+    public BigDecimal getFeeProduct() {
+        return this.product.getFee();
+    }
+
+    public boolean isInterestBorneByProductOwner() {
+        return SMART != this.status && this.product.isPaidByProducer();
+    }
+
+    public PurchaseType getPurchaseType() {
+        return type;
+    }
+
+    public Coupon getCoupon() {
+        return coupon;
     }
 }

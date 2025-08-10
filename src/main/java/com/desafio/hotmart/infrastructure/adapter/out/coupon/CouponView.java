@@ -1,4 +1,4 @@
-package com.desafio.hotmart.infrastructure.adapter.in.coupon;
+package com.desafio.hotmart.infrastructure.adapter.out.coupon;
 
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 

@@ -1,5 +1,6 @@
 package com.desafio.hotmart.application.core.domain.product;
 
+import com.desafio.hotmart.application.core.domain.coupon.Coupon;
 import com.desafio.hotmart.application.core.domain.user.User;
 import org.springframework.util.Assert;
 
@@ -79,10 +80,15 @@ public class Product {
                 .orElse(1);
     }
 
-    public BigDecimal calculatePriceWithDiscount(BigDecimal discountAmount) {
-        BigDecimal discountFactor = discountAmount.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-        BigDecimal discountValue = getPriceFromActiveOffer().multiply(discountFactor);
-        return getPriceFromActiveOffer().subtract(discountValue);
+    public BigDecimal calculatePriceWithDiscount(Coupon coupon) {
+        BigDecimal discountPercentage = discount(coupon);
+        BigDecimal discountRatio = discountPercentage.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        BigDecimal originalPrice = getPriceFromActiveOffer().multiply(discountRatio);
+        return getPriceFromActiveOffer().subtract(originalPrice);
+    }
+
+    private BigDecimal discount(Coupon coupon) {
+        return coupon != null ? coupon.getDiscountValue() : BigDecimal.ZERO;
     }
 
     public BigDecimal getPriceFromActiveOffer() {

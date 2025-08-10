@@ -38,9 +38,9 @@ public class CouponController {
                 .body("Product not found with code: " + request.productCode());
 
         Product product = possibleProduct.get();
-        Coupon activeCoupon = couponServicePort.invalidate(request.code(), request.discountValue(), product);
+        couponServicePort.invalidate(request.code(), product);
 
-        Coupon coupon = couponServicePort.save(activeCoupon, product);
+        Coupon coupon = couponServicePort.save(request.code(), request.discountValue(), request.expirationAt(), product);
         URI uri = URI.create("/coupon/" + coupon.getId());
         return ResponseEntity.created(uri).body("coupon created successfully");
     }

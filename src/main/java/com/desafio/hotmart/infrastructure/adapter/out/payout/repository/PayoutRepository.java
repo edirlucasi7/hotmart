@@ -1,5 +1,6 @@
-package com.desafio.hotmart.clientPayout;
+package com.desafio.hotmart.infrastructure.adapter.out.payout.repository;
 
+import com.desafio.hotmart.infrastructure.adapter.out.payout.entity.PayoutEntity;
 import com.desafio.hotmart.application.core.domain.purchase.Purchase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,9 +11,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
-public interface PayoutRepository extends JpaRepository<Payout, Long> {
+public interface PayoutRepository extends JpaRepository<PayoutEntity, Long> {
 
-    Optional<Payout> findByPurchase(Purchase purchase);
+    Optional<PayoutEntity> findByPurchase(Purchase purchase);
 
     @Modifying
     @Query(value = """

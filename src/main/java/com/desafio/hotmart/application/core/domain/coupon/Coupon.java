@@ -22,9 +22,18 @@ public class Coupon {
 
     private Status status = Status.ACTIVE;
 
-    public Coupon(String code, BigDecimal discountValue, Product product) {
+    public Coupon(String code, BigDecimal discountValue, LocalDateTime expirationAt, Product product) {
         this.code = code;
         this.discountValue = discountValue;
+        this.expirationAt = expirationAt;
+        this.product = product;
+    }
+
+    public Coupon(Long id, String code, BigDecimal discountValue, LocalDateTime expirationAt, Product product) {
+        this.id = id;
+        this.code = code;
+        this.discountValue = discountValue;
+        this.expirationAt = expirationAt;
         this.product = product;
     }
 
@@ -57,6 +66,6 @@ public class Coupon {
     }
 
     public Coupon toCoupon() {
-        return new Coupon(code, discountValue, product);
+        return new Coupon(id, code, discountValue, expirationAt, product);
     }
 }

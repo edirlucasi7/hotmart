@@ -9,7 +9,6 @@ import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEnti
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 @Component
@@ -27,17 +26,17 @@ public class CouponRepositoryAdapter implements CouponRepositoryPort {
     }
 
     @Override
-    public Coupon invalidate(String code, BigDecimal discountValue, Product product) {
-        Optional<CouponEntity> possibleCouponEntity = couponEntityRepository.findByCodeAndProductEntity_IdAndStatus(code, product.getId());
-        if (possibleCouponEntity.isEmpty()) return new Coupon(code, discountValue, product);
+    public void invalidate(String code, Product product) {
+        Optional<CouponEntity> possibleCouponEntity = couponEntityRepository.findByCodeAndProductEntity_IdAndActiveStatus(code, product.getId());
+        if (possibleCouponEntity.isEmpty()) return;
 
-        return possibleCouponEntity.get().invalidate();
+        possibleCouponEntity.get().invalidateActiveCoupon();
     }
 
     @Override
     @Transactional
-    public Coupon save(Coupon coupon, Product product) {
-        ProductEntity productEntity = new ProductEntity(product);
+    public Coupon save(Coupon coupon) {
+        ProductEntity productEntity = new ProductEntity(coupon.getProduct());
         return couponEntityRepository.save(new CouponEntity(coupon, productEntity)).toCoupon();
     }
 }

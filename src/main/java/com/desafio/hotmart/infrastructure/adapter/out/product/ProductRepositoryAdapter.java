@@ -4,7 +4,6 @@ import com.desafio.hotmart.application.core.domain.product.Product;
 import com.desafio.hotmart.application.core.domain.product.ProductOffer;
 import com.desafio.hotmart.application.port.PagePort;
 import com.desafio.hotmart.application.port.product.ProductRepositoryPort;
-import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
 import com.desafio.hotmart.infrastructure.adapter.out.PageDTO;
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductOfferEntity;
@@ -42,11 +41,9 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
     }
 
     @Override
-    public void addOffer(String productCode, ProductOffer request) throws ProductNotFoundException {
-        ProductEntity productEntity = productEntityRepository.findByCode(productCode)
-                .orElseThrow(() -> new ProductNotFoundException(productCode));
-
-        productEntity.addOffer(new ProductOfferEntity(request));
+    public void addOffer(String productCode, ProductOffer productOffer) {
+        ProductEntity productEntity = productEntityRepository.findByCode(productCode).orElseThrow(IllegalArgumentException::new);
+        productEntity.addOffer(new ProductOfferEntity(productOffer));
         productEntityRepository.save(productEntity);
     }
 

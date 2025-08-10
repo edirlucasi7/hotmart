@@ -56,6 +56,6 @@ public class UserEntity {
     }
 
     public User toUser() {
-        return new User(profile, new Email(email.getEmail()));
+        return new User(id, profile, new Email(email.getEmail()));
     }
 }

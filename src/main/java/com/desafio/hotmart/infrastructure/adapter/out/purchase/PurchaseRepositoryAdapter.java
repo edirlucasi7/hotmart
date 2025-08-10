@@ -1,12 +1,14 @@
 package com.desafio.hotmart.infrastructure.adapter.out.purchase;
 
+import com.desafio.hotmart.application.core.domain.payout.Payout;
 import com.desafio.hotmart.application.core.domain.purchase.Purchase;
 import com.desafio.hotmart.application.port.purchase.PurchaseRepositoryPort;
-import com.desafio.hotmart.clientPayout.Payout;
-import com.desafio.hotmart.clientPayout.PayoutRepository;
+import com.desafio.hotmart.infrastructure.adapter.out.payout.repository.PayoutRepository;
+import com.desafio.hotmart.infrastructure.adapter.out.payout.entity.PayoutEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.purchase.entity.PurchaseEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.purchase.repository.PurchaseRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class PurchaseRepositoryAdapter implements PurchaseRepositoryPort {
@@ -19,10 +21,12 @@ public class PurchaseRepositoryAdapter implements PurchaseRepositoryPort {
         this.payoutRepository = payoutRepository;
     }
 
+    @Transactional
     @Override
-    public void save(Purchase newPurchase, Payout payout, boolean smartPayment) {
-        purchaseRepository.save(new PurchaseEntity(newPurchase, smartPayment)).toPurchase();
-        payoutRepository.save(payout);
+    public void save(Purchase newPurchase, Payout newPayout, boolean smartPayment) {
+        PurchaseEntity purchaseEntity = purchaseRepository.save(new PurchaseEntity(newPurchase, smartPayment));
+        purchaseRepository.save(purchaseEntity);
+        payoutRepository.save(new PayoutEntity(purchaseEntity, newPayout));
     }
 
     @Override

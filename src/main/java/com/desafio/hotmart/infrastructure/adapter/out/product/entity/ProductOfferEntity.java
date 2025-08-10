@@ -40,22 +40,6 @@ public class ProductOfferEntity {
         this.interestPayer = productOffer.getInterestPayer();
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public InterestPayer getInterestPayer() {
-        return interestPayer;
-    }
-
-    public int getMaximumNumberOfInstallments() {
-        return maximumNumberOfInstallments;
-    }
-
     public void disable() {
         this.active = false;
     }

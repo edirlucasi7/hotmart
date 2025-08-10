@@ -10,6 +10,12 @@ public class User {
 
     public User() { }
 
+    public User(Long id, Profile profile, Email email) {
+        this.id = id;
+        this.profile = profile;
+        this.email = email;
+    }
+
     public User(Profile profile, Email email) {
         this.profile = profile;
         this.email = email;

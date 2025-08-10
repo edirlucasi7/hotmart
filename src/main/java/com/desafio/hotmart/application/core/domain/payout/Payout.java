@@ -1,43 +1,29 @@
-package com.desafio.hotmart.clientPayout;
+package com.desafio.hotmart.application.core.domain.payout;
 
 import com.desafio.hotmart.application.core.domain.purchase.Purchase;
-import com.desafio.hotmart.application.core.domain.user.User;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
-@Entity
 public class Payout {
 
     private final static BigDecimal MONTHLY_DISCOUNT_ON_INSTALLMENTS = new BigDecimal("0.5");
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @OneToOne
     private Purchase purchase;
 
-    @NotNull
     private BigDecimal amount;
 
-    @NotNull
     private BigDecimal platformFee;
 
-    @NotNull
     private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
     private PayoutStatus status;
 
-    @Deprecated
     public Payout() { }
 
     public Payout(Purchase purchase, int numberOfInstallments) {
@@ -47,32 +33,8 @@ public class Payout {
         this.status = PayoutStatus.PENDING;
     }
 
-    public Purchase getPurchase() {
-        return purchase;
-    }
-
-    public User getProducer() {
-        return purchase.getProductOwner();
-    }
-
     public BigDecimal getAmount() {
         return amount;
-    }
-
-    public BigDecimal getPlatformFee() {
-        return platformFee;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public PayoutStatus getStatus() {
-        return status;
     }
 
     private BigDecimal calculateAmountForPayout(int installments) {
@@ -80,21 +42,11 @@ public class Payout {
         BigDecimal feeAmount = getFeeAmount(feeRate);
         BigDecimal amountAfterFee = getAmountAfterFeeAmount(feeAmount);
 
-        if (installmentPurchaseWithInterestForTheProducer(installments)) {
-            return applyAmountForPurchaseWith(installments, amountAfterFee);
+        if (isInstallmentWithProducerInterest(installments)) {
+            return applyInstallmentInterestDiscount(installments, amountAfterFee);
         }
 
         return amountAfterFee.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    private boolean installmentPurchaseWithInterestForTheProducer(int installments) {
-        return installments > 0 && this.purchase.isInterestBorneByProductOwner();
-    }
-
-    private BigDecimal applyAmountForPurchaseWith(int numberOfInstallments, BigDecimal amountAfterFee) {
-        updateStatusToConfirmed();
-        BigDecimal installmentInterest = calculateInterestFor(numberOfInstallments);
-        return amountAfterFee.subtract(installmentInterest).setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal getAmountAfterFeeAmount(BigDecimal feeAmount) {
@@ -109,7 +61,17 @@ public class Payout {
         return this.purchase.getFeeProduct().divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
     }
 
-    private BigDecimal calculateInterestFor(int numberOfInstallments) {
+    private boolean isInstallmentWithProducerInterest(int installments) {
+        return installments > 0 && this.purchase.isInterestBorneByProductOwner();
+    }
+
+    private BigDecimal applyInstallmentInterestDiscount(int numberOfInstallments, BigDecimal amountAfterFee) {
+        updateStatusToConfirmed(); // TODO preciso desse status?
+        BigDecimal installmentInterest = calculateInstallmentInterestAmount(numberOfInstallments);
+        return amountAfterFee.subtract(installmentInterest).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateInstallmentInterestAmount(int numberOfInstallments) {
         BigDecimal amountAfterFeePerMonth = MONTHLY_DISCOUNT_ON_INSTALLMENTS
                 .multiply(BigDecimal.valueOf(numberOfInstallments))
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
@@ -119,5 +81,17 @@ public class Payout {
 
     private void updateStatusToConfirmed() {
         this.status = PayoutStatus.CONFIRMED;
+    }
+
+    public Purchase getPurchase() {
+        return purchase;
+    }
+
+    public BigDecimal getPlatformFee() {
+        return platformFee;
+    }
+
+    public PayoutStatus getStatus() {
+        return status;
     }
 }

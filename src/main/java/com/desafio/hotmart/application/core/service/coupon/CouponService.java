@@ -2,14 +2,11 @@ package com.desafio.hotmart.application.core.service.coupon;
 
 import com.desafio.hotmart.application.core.domain.coupon.Coupon;
 import com.desafio.hotmart.application.core.domain.product.Product;
-import com.desafio.hotmart.application.core.service.product.ProductService;
 import com.desafio.hotmart.application.port.coupon.CouponRepositoryPort;
-import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
 import com.desafio.hotmart.infrastructure.adapter.in.product.ProductServicePort;
-import com.desafio.hotmart.infrastructure.adapter.out.coupon.entity.CouponEntity;
-import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class CouponService implements CouponServicePort {
@@ -23,20 +20,18 @@ public class CouponService implements CouponServicePort {
     }
 
     @Override
-    public Optional<BigDecimal> tryGetDiscount(String coupon, String productCode) throws ProductNotFoundException{
-        Product product = productServicePort.findByCode(productCode)
-                .orElseThrow(() -> new ProductNotFoundException(productCode));
-
-        return couponRepositoryPort.findCouponByCodeAndProduct(coupon, product.getId()).map(Coupon::getDiscountValue);
+    public Optional<Coupon> tryGetDiscount(String coupon, String productCode){
+        Product product = productServicePort.findByCode(productCode).orElseThrow(IllegalArgumentException::new);
+        return couponRepositoryPort.findCouponByCodeAndProduct(coupon, product.getId());
     }
 
     @Override
-    public Coupon invalidate(String code, BigDecimal discountValue, Product product) {
-        return couponRepositoryPort.invalidate(code, discountValue, product);
+    public void invalidate(String code, Product product) {
+        couponRepositoryPort.invalidate(code, product);
     }
 
     @Override
-    public Coupon save(Coupon coupon, Product product) {
-        return couponRepositoryPort.save(coupon, product);
+    public Coupon save(String code, BigDecimal discountValue, LocalDateTime expirationAt, Product product) {
+        return couponRepositoryPort.save(new Coupon(code, discountValue, expirationAt, product)).toCoupon();
     }
 }

@@ -3,6 +3,7 @@ package com.desafio.hotmart.infrastructure.adapter.out.purchase.entity;
 import com.desafio.hotmart.application.core.domain.purchase.Purchase;
 import com.desafio.hotmart.application.core.domain.purchase.PurchaseStatus;
 import com.desafio.hotmart.application.core.domain.purchase.PurchaseType;
+import com.desafio.hotmart.infrastructure.adapter.out.coupon.entity.CouponEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.product.entity.ProductEntity;
 import com.desafio.hotmart.infrastructure.adapter.out.user.entity.UserEntity;
 import com.github.f4b6a3.tsid.Tsid;
@@ -16,14 +17,17 @@ import java.time.LocalDateTime;
 import static jakarta.persistence.EnumType.STRING;
 
 @Entity
+@Table(name = "purchase")
 public class PurchaseEntity {
+
+    // TODO faltou associar a compra a oferta usada
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
     @NotNull
@@ -52,17 +56,23 @@ public class PurchaseEntity {
     @Enumerated(STRING)
     private PurchaseType purchaseType;
 
+    @ManyToOne
+    @JoinColumn(name = "coupon_id")
+    private CouponEntity couponEntity;
+
     @Deprecated
     public PurchaseEntity() { }
 
     public PurchaseEntity(Purchase purchase, boolean isSmart) {
         this.userEntity = new UserEntity(purchase.getUser());
+        this.couponEntity = new CouponEntity(purchase.getCoupon());
         this.price = purchase.getPrice();
         this.productEntity = new ProductEntity(purchase.getProduct());
         this.status = purchase.assignStatus(isSmart);
+        this.purchaseType = purchase.getPurchaseType();
     }
 
     public Purchase toPurchase() {
-        return new Purchase(userEntity.toUser(), price, productEntity.toProduct(), purchaseType);
+        return new Purchase(userEntity.toUser(), couponEntity.toCoupon(), productEntity.toProduct(), purchaseType);
     }
 }

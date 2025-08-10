@@ -11,19 +11,19 @@ public interface CouponEntityRepository extends JpaRepository<CouponEntity, Long
 
     @Query(value = """
         SELECT co.*
-        FROM couponEntity co
-            JOIN productEntity po ON po.id = co.product_id
-        WHERE co.code = :couponEntity
+        FROM coupon co
+            JOIN product po ON po.id = co.product
+        WHERE co.code = :couponCode
             AND po.id = :productId
             AND co.created_at <= NOW() AND co.expiration_at >= NOW()
             AND co.status = 'ACTIVE'
     """, nativeQuery = true)
-    Optional<CouponEntity> findCouponByCodeAndProduct(String couponEntity, Long productId);
+    Optional<CouponEntity> findCouponByCodeAndProduct(String couponCode, Long productId);
 
 //    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<CouponEntity> findByCodeAndProductEntity_IdAndStatus(String code, Long productId, Status status);
 
-    default Optional<CouponEntity> findByCodeAndProductEntity_IdAndStatus(String code, Long productId) {
+    default Optional<CouponEntity> findByCodeAndProductEntity_IdAndActiveStatus(String code, Long productId) {
         return findByCodeAndProductEntity_IdAndStatus(code, productId, Status.ACTIVE);
     }
 

@@ -4,7 +4,6 @@ import com.desafio.hotmart.application.core.domain.product.Product;
 import com.desafio.hotmart.application.core.domain.product.ProductOffer;
 import com.desafio.hotmart.application.port.PagePort;
 import com.desafio.hotmart.application.port.product.ProductRepositoryPort;
-import com.desafio.hotmart.application.shared.exception.ProductNotFoundException;
 import com.desafio.hotmart.infrastructure.adapter.in.product.ProductServicePort;
 
 import java.util.Optional;
@@ -33,7 +32,7 @@ public class ProductService implements ProductServicePort {
     }
 
     @Override
-    public void addOffer(String productCode, ProductOffer request) throws ProductNotFoundException {
+    public void addOffer(String productCode, ProductOffer request) {
         productRepositoryPort.addOffer(productCode, request);
     }
 
