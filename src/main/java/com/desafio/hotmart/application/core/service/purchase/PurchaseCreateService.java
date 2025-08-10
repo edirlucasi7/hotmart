@@ -12,6 +12,7 @@ import com.desafio.hotmart.infrastructure.adapter.in.product.ProductServicePort;
 import com.desafio.hotmart.infrastructure.adapter.in.purchase.PurchaseServicePort;
 import com.desafio.hotmart.infrastructure.adapter.in.user.UserServicePort;
 import com.desafio.hotmart.infrastructure.adapter.out.purchase.entity.PurchaseEntity;
+import jakarta.transaction.Transactional;
 
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ public class PurchaseCreateService implements PurchaseServicePort {
         this.userServicePort = userServicePort;
     }
 
+    @Transactional
     @Override
     public void save(NewPurchaseContract newPurchaseContract, Coupon coupon, boolean isSmartPayment) throws IllegalArgumentException {
         Optional<Product> possibleProduct = productServicePort.findByIdAndActiveTrue(newPurchaseContract.getProductCode());
@@ -36,29 +38,18 @@ public class PurchaseCreateService implements PurchaseServicePort {
         Product product = possibleProduct.get();
         PurchaseType purchaseType = PurchaseType.getByName(newPurchaseContract.getUpperCaseType());
 
-        // TODO precisa ter validação na request, só estoura erro se for erro de programação
-        if (ifClientAlreadyHasProduct(client, product)) throw new IllegalArgumentException("The client already has the valid purchase for the product");
+        // TODO como validar isso na request? o user pode ser criado logo acima
+        if (ifClientAlreadyHasProduct(client, product))
+            throw new IllegalArgumentException("The client already has the valid purchase for the product");
 
-        // TODO precisa ter validação na request, só estoura erro se for erro de programação
-        if (isSmartPaymentValid(isSmartPayment, purchaseType)
-                && !hasValidNumberOfInstallments(newPurchaseContract, product))
-            throw new IllegalArgumentException("The number of installments of a smart payment must be the maximum " + "allowed by product and have the type credit card.");
+        if (purchaseType.isSmartPaymentWithCreditCard(isSmartPayment)
+                && !product.hasValidNumberOfInstallments(newPurchaseContract.getInstallments()))
+            throw new IllegalArgumentException("The number of installments of a smart payment must be the maximum "
+                    + "allowed by product and have the type credit card.");
 
         Purchase newPurchase = new Purchase(client, coupon, product, purchaseType);
         Payout newPayout = new Payout(new PurchaseEntity(newPurchase, isSmartPayment).toPurchase(), newPurchaseContract.getInstallments());
         purchaseRepositoryPort.save(newPurchase, newPayout, isSmartPayment);
-    }
-
-    private boolean isSmartPaymentValid(boolean isSmartPayment, PurchaseType purchaseType) {
-        return isSmartPayment && purchaseType.isCreditCard();
-    }
-
-    private boolean hasValidNumberOfInstallments(NewPurchaseContract newPurchaseContract, Product product) {
-        return !hasMaximumNumberOfInstallmentsFromActiveOffer(newPurchaseContract, product);
-    }
-
-    private boolean hasMaximumNumberOfInstallmentsFromActiveOffer(NewPurchaseContract newPurchaseContract, Product product) {
-        return newPurchaseContract.getInstallments() == product.getMaximumNumberOfInstallmentsFromActiveOffer();
     }
 
     private boolean ifClientAlreadyHasProduct(User client, Product product) {

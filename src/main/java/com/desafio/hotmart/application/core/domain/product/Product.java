@@ -108,4 +108,8 @@ public class Product {
                 .findFirst()
                 .orElseThrow(IllegalStateException::new);
     }
+
+    public boolean hasValidNumberOfInstallments(Integer installments) {
+        return installments == this.getMaximumNumberOfInstallmentsFromActiveOffer();
+    }
 }
