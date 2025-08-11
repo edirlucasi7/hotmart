@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: no
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: hotmart
+      MYSQL_USER: ${MYSQL_USER:-hotmart_app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-app123}
+    profiles:
+      - dev
+      - prod
+      - db
+
+  adminer:
+    image: adminer
+    restart: no
+    ports:
+      - "8080:8080"
+    profiles:
+      - dev
+      - db
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: no
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 3306
+    depends_on:
+      - db
+    profiles:
+      - prod
