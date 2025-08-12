@@ -5,10 +5,10 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: hotmart
-      MYSQL_USER: ${MYSQL_USER:-hotmart_app}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-app123}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     profiles:
       - dev
       - prod

@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=21-slim
+ARG BASE_IMAGE=23-slim
 
 FROM openjdk:${BASE_IMAGE} AS builder
 
