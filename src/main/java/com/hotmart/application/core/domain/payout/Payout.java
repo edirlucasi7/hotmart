@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class Payout {
 
-    private final static BigDecimal MONTHLY_DISCOUNT_ON_INSTALLMENTS = new BigDecimal("0.5");
+    private final static BigDecimal MONTHLY_DISCOUNT_ON_INSTALLMENTS = BigDecimal.valueOf(0.5);
 
     private Long id;
 
