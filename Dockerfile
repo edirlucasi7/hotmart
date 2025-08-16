@@ -16,8 +16,8 @@ FROM openjdk:${BASE_IMAGE} AS runtime
 
 WORKDIR /app
 
-COPY --from=builder /app/target/*.jar /app/Hotmart.jar
+COPY --from=builder /app/target/*.jar /app/hotmart.jar
 
 EXPOSE 8001
 
-CMD ["java", "-jar", "/app/Hotmart.jar"]
+CMD ["java", "-jar", "/app/hotmart.jar"]
