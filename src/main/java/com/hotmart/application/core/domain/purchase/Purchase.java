@@ -48,6 +48,14 @@ public class Purchase {
         this.type = type;
     }
 
+    public Purchase(User user, Product product, PurchaseType type) {
+        this.user = user;
+        this.price = product.getPriceFromActiveOffer();
+        this.product = product;
+        this.status = REGULAR;
+        this.type = type;
+    }
+
     public Long getId() {
         return this.id;
     }

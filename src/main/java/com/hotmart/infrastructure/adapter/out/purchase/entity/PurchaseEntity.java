@@ -65,14 +65,22 @@ public class PurchaseEntity {
 
     public PurchaseEntity(Purchase purchase, boolean isSmart) {
         this.userEntity = new UserEntity(purchase.getUser());
-        this.couponEntity = new CouponEntity(purchase.getCoupon());
         this.price = purchase.getPrice();
         this.productEntity = new ProductEntity(purchase.getProduct());
         this.status = purchase.assignStatus(isSmart);
         this.purchaseType = purchase.getPurchaseType();
+
+        if (purchase.getCoupon() != null) this.couponEntity = new CouponEntity(purchase.getCoupon());
     }
 
     public Purchase toPurchase() {
-        return new Purchase(userEntity.toUser(), couponEntity.toCoupon(), productEntity.toProduct(), purchaseType);
+        if (hasCoupon())
+            return new Purchase(userEntity.toUser(), couponEntity.toCoupon(), productEntity.toProduct(), purchaseType);
+
+        return new Purchase(userEntity.toUser(), productEntity.toProduct(), purchaseType);
+    }
+
+    private boolean hasCoupon() {
+        return this.couponEntity != null;
     }
 }

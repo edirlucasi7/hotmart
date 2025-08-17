@@ -24,7 +24,7 @@ public class UserService implements UserServicePort {
         return userRepositoryPort.findByEmail_Email(email);
     }
 
-    public User getBy(String email) {
+    public User getByOrCreate(String email) {
         return userRepositoryPort.findByEmail_Email(email).orElseGet(() -> create(email));
     }
 

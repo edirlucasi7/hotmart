@@ -34,11 +34,10 @@ public class PurchaseCreateService implements PurchaseServicePort {
         Optional<Product> possibleProduct = productServicePort.findByIdAndActiveTrue(newPurchaseContract.getProductCode());
         if (possibleProduct.isEmpty()) throw new IllegalArgumentException("Product is not available");
 
-        User client = userServicePort.getBy(newPurchaseContract.getEmail());
+        User client = userServicePort.getByOrCreate(newPurchaseContract.getEmail());
         Product product = possibleProduct.get();
         PurchaseType purchaseType = PurchaseType.getByName(newPurchaseContract.getUpperCaseType());
 
-        // TODO como validar isso na request? o user pode ser criado logo acima
         if (ifClientAlreadyHasProduct(client, product))
             throw new IllegalArgumentException("The client already has the valid purchase for the product");
 

@@ -8,5 +8,5 @@ public interface UserServicePort {
 
     Optional<User> findByEmail(String email);
 
-    User getBy(String email);
+    User getByOrCreate(String email);
 }

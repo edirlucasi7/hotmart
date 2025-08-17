@@ -19,6 +19,4 @@ public interface ProductServicePort {
     Optional<Product> findById(Long id);
 
     Optional<Product> findByIdAndActiveTrue(String code);
-
-
 }
