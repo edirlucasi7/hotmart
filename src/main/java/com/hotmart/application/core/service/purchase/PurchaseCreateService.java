@@ -39,7 +39,7 @@ public class PurchaseCreateService implements PurchaseServicePort {
         PurchaseType purchaseType = PurchaseType.getByName(newPurchaseContract.getUpperCaseType());
 
         if (ifClientAlreadyHasProduct(client, product))
-            throw new IllegalArgumentException("The client already has the valid purchase for the product");
+            throw new IllegalStateException("The client already has the valid purchase for the product");
 
         if (purchaseType.isSmartPaymentWithCreditCard(isSmartPayment)
                 && !product.hasValidNumberOfInstallments(newPurchaseContract.getInstallments()))
