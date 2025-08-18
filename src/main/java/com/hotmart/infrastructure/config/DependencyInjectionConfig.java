@@ -4,6 +4,7 @@ import com.hotmart.application.core.service.coupon.CouponService;
 import com.hotmart.application.core.service.coupon.CouponServicePort;
 import com.hotmart.application.core.service.product.ProductService;
 import com.hotmart.application.core.service.purchase.PurchaseCreateService;
+import com.hotmart.infrastructure.adapter.in.purchase.validator.PurchaseServiceValidator;
 import com.hotmart.application.port.coupon.CouponRepositoryPort;
 import com.hotmart.application.port.product.ProductRepositoryPort;
 import com.hotmart.application.port.purchase.PurchaseRepositoryPort;
@@ -27,7 +28,7 @@ public class DependencyInjectionConfig {
     }
 
     @Bean
-    public PurchaseServicePort purchaseService(PurchaseRepositoryPort purchaseRepositoryPort, ProductServicePort productServicePort, UserServicePort userServicePort) {
-        return new PurchaseCreateService(purchaseRepositoryPort, productServicePort, userServicePort);
+    public PurchaseServicePort purchaseService(PurchaseRepositoryPort purchaseRepositoryPort, ProductServicePort productServicePort, UserServicePort userServicePort, PurchaseServiceValidator purchaseServiceValidator) {
+        return new PurchaseCreateService(purchaseRepositoryPort, productServicePort, userServicePort, purchaseServiceValidator);
     }
 }

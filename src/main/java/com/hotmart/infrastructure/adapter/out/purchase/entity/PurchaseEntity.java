@@ -20,7 +20,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Table(name = "purchase")
 public class PurchaseEntity {
 
-    // TODO faltou associar a compra a oferta usada
+    // TODO falta associar a compra a oferta usada
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

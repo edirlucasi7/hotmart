@@ -22,8 +22,8 @@ public class PurchaseController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@Valid @RequestBody PurchaseRequest request, @RequestParam(required = false) String coupon,
-                                    @RequestParam(required = false) boolean smartPayment) {
+    public ResponseEntity<?> create(@Valid @RequestBody PurchaseRequest request,
+                                    @RequestParam(required = false) String coupon) {
 
         Optional<Coupon> discount = Optional.empty();
         if (CouponValidator.isValid(coupon)) {
@@ -34,7 +34,7 @@ public class PurchaseController {
 
         // PurchaseType.getByType(request.type()) processar no provedor de pagamento
 
-        purchaseServicePort.save(request, discount.orElse(null), smartPayment);
+        purchaseServicePort.save(request, discount.orElse(null));
 
         return ResponseEntity.ok(new GenericPaymentResponse<>(new PaymentResponseDTO("purchase received")));
     }

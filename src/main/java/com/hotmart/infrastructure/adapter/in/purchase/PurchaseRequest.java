@@ -7,7 +7,8 @@ import jakarta.validation.constraints.NotNull;
 public record PurchaseRequest(@NotBlank String productCode,
                               @NotBlank String email,
                               @NotBlank String type,
-                              @NotNull Integer installments) implements NewPurchaseContract {
+                              @NotNull Integer installments,
+                              boolean smartPayment) implements NewPurchaseContract {
 
     @Override
     public String getProductCode() {
@@ -27,5 +28,10 @@ public record PurchaseRequest(@NotBlank String productCode,
     @Override
     public Integer getInstallments() {
         return installments;
+    }
+
+    @Override
+    public boolean isSmartPayment() {
+        return smartPayment;
     }
 }

@@ -6,5 +6,5 @@ import org.springframework.lang.Nullable;
 
 public interface PurchaseServicePort {
 
-    void save(NewPurchaseContract newPurchaseContract, @Nullable Coupon coupon, boolean smartPayment);
+    void save(NewPurchaseContract newPurchaseContract, @Nullable Coupon coupon);
 }

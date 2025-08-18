@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Product {
 
-    private static final BigDecimal STANDARD_INTEREST_IN_PERCENTAGE = new BigDecimal("15.0");
+    private static final BigDecimal STANDARD_INTEREST_IN_PERCENTAGE = BigDecimal.valueOf(15.0);
 
     private Long id;
 
